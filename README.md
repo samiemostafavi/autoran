@@ -1,7 +1,7 @@
 # oai-ran-docker
 
 
-EnB
+#LTE EnB
 
 on the host:
 
@@ -24,7 +24,7 @@ in the container:
     ./bin/uhd_images_downloader.py
     /opt/oai-enb/bin/lte-softmodem.Rel15 -O enb.band7.tm1.25PRB.usrpb210.conf --nokrnmod 1 --noS1 --eNBs.[0].rrc_inactivity_threshold 0
 
-UE
+#LTE UE
 
 on the host:
 
