@@ -1,5 +1,10 @@
-# oai-ran-docker
+# OAI repositories
 
+RAN repo: https://gitlab.eurecom.fr/oai/openairinterface5g
+
+Core network repo: https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+
+# oai-ran-docker
 
 # LTE EnB
 
