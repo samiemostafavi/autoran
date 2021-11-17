@@ -15,7 +15,11 @@ Run the container in host and privileged mode:
     
     docker run -it --net=host --privileged rdefosseoai/oai-enb:2021.w46 /bin/bash
 
-on the host:
+on the host, find the running container name:
+
+    docker container ls
+
+copy the enb conf file to the container:
     
     docker cp openairinterface5g/ci-scripts/conf_files/enb.band7.tm1.25PRB.usrpb210.conf $CONTAINER_NAME$:/opt/oai-enb
 
