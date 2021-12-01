@@ -54,11 +54,11 @@ in the container:
 
 on the host:
 
-    docker pull rdefosseoai/oai-enb:develop
+    docker pull rdefosseoai/oai-lte-ue:develop
 
 run the container and override entrypoint:
 
-    docker run -it --net=host --privileged --entrypoint /bin/bash rdefosseoai/oai-lte-ue:2021.w46
+    docker run -it --net=host --privileged --entrypoint /bin/bash rdefosseoai/oai-lte-ue:develop
 
 in the container:
 
