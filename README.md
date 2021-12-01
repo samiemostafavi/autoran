@@ -52,6 +52,21 @@ in the container:
 
 # LTE UE
 
+## Using docker-compose
+
+To start:
+
+    cd lte-ue
+    docker pull rdefosseoai/oai-lte-ue:develop
+    docker-compose -f docker-compose.yaml up
+
+Then remove the container:
+
+    docker stop /oaiue
+    docker rm /oaiue
+
+## Using Docker CLI
+
 on the host:
 
     docker pull rdefosseoai/oai-lte-ue:develop
