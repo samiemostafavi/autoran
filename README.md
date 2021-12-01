@@ -15,6 +15,7 @@ Docker images: https://hub.docker.com/u/rdefosseoai
 To start:
 
     cd enodeb
+    docker pull rdefosseoai/oai-enb:develop
     docker-compose -f docker-compose.yaml up
 
 Then remove the container:
