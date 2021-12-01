@@ -10,6 +10,20 @@ Docker images: https://hub.docker.com/u/rdefosseoai
 
 # LTE EnB
 
+## Using docker-compose
+
+To start:
+
+    cd enodeb
+    docker-compose -f docker-compose.yaml up
+
+Then remove the container:
+
+    docker stop /oaienb 
+    docker rm /oaienb
+
+## Using Docker CLI
+
 on the host:
 
     docker pull rdefosseoai/oai-enb:develop
