@@ -1,8 +1,10 @@
 # OAI repositories
 
-RAN repo: https://gitlab.eurecom.fr/oai/openairinterface5g
+LTE & 5G Radio Access Network (RAN) repository: https://gitlab.eurecom.fr/oai/openairinterface5g
 
-Core network repo: https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+5G Core Network (CN) repository: https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
+
+LTE Evolved Packet Core (EPC) repository: https://github.com/OPENAIRINTERFACE/openair-epc-fed
 
 Docker images: https://hub.docker.com/u/rdefosseoai
 
