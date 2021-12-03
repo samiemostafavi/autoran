@@ -82,11 +82,11 @@ run the container and override entrypoint:
 in the container:
 
     ./bin/uhd_images_downloader.py
-    ./bin/conf2uedata -c /app/ue_usim.conf -o .
+    
     ./bin/usim -g -c /app/ue_usim.conf
-    ./bin/nvram -g -c /app/ue_usim.conf
     
     /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1 --noS1
+    
     ./bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier
     
     
