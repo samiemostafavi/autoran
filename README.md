@@ -77,7 +77,7 @@ run the container and override entrypoint:
 
     docker run -it --net=host --privileged --entrypoint /bin/bash rdefosseoai/oai-lte-ue:develop
     
-    docker run -it --net=host --privileged --entrypoint /bin/bash --mount type=bind,source=.,target=/app rdefosseoai/oai-lte-ue:develop 
+    docker run -it --net=host --privileged --entrypoint /bin/bash --mount type=bind,source=/home/wlab/oai-ran-docker/lte-ue,target=/app rdefosseoai/oai-lte-ue:develop
 
 in the container:
 
