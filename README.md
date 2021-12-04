@@ -65,6 +65,10 @@ in the container:
     https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/openair3/NAS/TOOLS/ue_sim_ci.conf
     https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/l2-nfapi-simulator/l2-nfapi-simulator-w-S1-same-machine#3-retrieve-the-oai-enb-ue-source-code
 
+Good explanation about UE sim config:
+
+    https://github.com/danielgora/openair-epc-fed/blob/develop/docs/EPC_IN_A_BOX.md
+
 ## Using docker-compose
 
 To start:
