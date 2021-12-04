@@ -57,6 +57,8 @@ in the container:
 ## Configuration
 
     https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/how-to-run-oaisim-with-multiple-ue
+    
+    https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/doc/BASIC_SIM.md
 
 ## Using docker-compose
 
