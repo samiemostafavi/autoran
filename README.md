@@ -54,6 +54,10 @@ in the container:
 
 # LTE UE
 
+## Configuration
+
+    https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/how-to-run-oaisim-with-multiple-ue
+
 ## Using docker-compose
 
 To start:
