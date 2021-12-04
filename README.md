@@ -68,6 +68,11 @@ in the container:
 Good explanation about UE sim config:
 
     https://github.com/danielgora/openair-epc-fed/blob/develop/docs/EPC_IN_A_BOX.md
+    
+An important point from mailing list with the name `UE-softmodem fails to add ip address`:
+
+I would say `nasmesh` is not much more worked on
+here at Eurecom. So use `--nokrnmod 1` all the time.
 
 ## Using docker-compose
 
