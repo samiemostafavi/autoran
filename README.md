@@ -12,6 +12,10 @@ Docker images: https://hub.docker.com/u/rdefosseoai
 
 # LTE EnB
 
+## Configure
+
+    https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/enb.band7.tm1.fr1.25PRB.usrpb210.conf
+
 ## Using docker-compose
 
 To start:
