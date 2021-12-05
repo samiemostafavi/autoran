@@ -1,14 +1,33 @@
 # OAI repositories
 
+### RAN
+
 LTE & 5G Radio Access Network (RAN) repository: https://gitlab.eurecom.fr/oai/openairinterface5g
+
+### Core Networks
 
 5G Core Network (CN) repository: https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed
 
-LTE Evolved Packet Core (EPC) repository: https://github.com/OPENAIRINTERFACE/openair-epc-fed
+LTE Eovlved Packet Core (EPC) repository: https://github.com/OPENAIRINTERFACE/openair-epc-fed.
+
+### Docker Images
 
 Docker images: https://hub.docker.com/u/rdefosseoai
 
-# oai-ran-docker
+# Step 1. Starting LTE Evolved Packet Core (EPC)
+
+Openairinterface LTE EPC consists of:
+1. HSS
+2. MME
+3. SPGW-U+SPGW-C
+
+The federation repository is located at https://github.com/OPENAIRINTERFACE/openair-epc-fed.
+
+There is 2 options regarding deployment of MME in Openairinterface:
+- Magma MME [Start here](https://github.com/OPENAIRINTERFACE/openair-epc-fed/blob/master/docs/DEPLOY_HOME_MAGMA_MME.md)
+- Legacy MME [Start here](https://github.com/OPENAIRINTERFACE/openair-epc-fed/blob/master/docs/DEPLOY_HOME.md) *
+
+*Currently, OAI UE does not connect to Magma MME. Hence, in this tutorial we use `Legacy MME` which is not stable and could need restart after a few hours.
 
 # LTE EnB
 
