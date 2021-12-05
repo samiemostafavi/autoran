@@ -14,6 +14,11 @@ LTE Eovlved Packet Core (EPC) repository: https://github.com/OPENAIRINTERFACE/op
 
 Docker images: https://hub.docker.com/u/rdefosseoai
 
+# Setup Schematic
+
+![alt text](network.png "Title")
+
+
 # Step 1. Starting LTE Evolved Packet Core (EPC)
 
 Openairinterface LTE EPC consists of:
