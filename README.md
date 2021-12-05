@@ -16,10 +16,10 @@ Docker images: https://hub.docker.com/u/rdefosseoai
 
 # Setup Schematic
 
-![alt text](network.png "Title")
+![Setup Schematic](https://github.com/samiemostafavi/oai-lte-docker/blob/main/OAICN-Network-Deployment-Explanation.png "Setup Schematic")
 
 
-# Step 1. Starting LTE Evolved Packet Core (EPC)
+# Step 1. Start LTE Evolved Packet Core (EPC)
 
 Openairinterface LTE EPC consists of:
 1. HSS
@@ -34,11 +34,13 @@ There is 2 options regarding deployment of MME in Openairinterface:
 
 *Currently, OAI UE does not connect to Magma MME. Hence, in this tutorial we use `Legacy MME` which is not stable and could need restart after a few hours.
 
-# LTE EnB
+# Step 2. Start LTE EnB
 
-## Configure
+We use USRP B210 as the software-defined radio in this tutorial. There is a config file located at 
 
     https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/enb.band7.tm1.fr1.25PRB.usrpb210.conf
+    
+which is modified and used as `enodeb/enb.conf`.
 
 ## Using docker-compose
 
