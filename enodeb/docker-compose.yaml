@@ -1,10 +1,23 @@
 version: '2'
 
 services:
-  oaienb: # Domain name of container
+  check-enb-connections:
+    image: rdefosseoai/oai-enb:develop
+    container_name: check-enb-connections # Name of the container
+    hostname: ubuntu # hostname
+    privileged: true # Give the container the permission to manipulate the host
+    networks:
+      prod-oai-public-net:
+        ipv4_address: 192.168.61.198
+    entrypoint: /usr/bin/env
+    command: sh -c "{ ping -c 5 192.168.61.195 && ping -c 5 192.168.61.196; } 2>&1 | tee /opt/oai-enb/logs.txt"
+    volumes: # Mounted from host
+      - ./logs.txt:/opt/oai-enb/logs.txt
+
+  prod-oai-enb: # Domain name of container
     image: rdefosseoai/oai-enb:develop
     restart: always # Operation Policy
-    container_name: oaienb # Name of the container
+    container_name: prod-oai-enb # Name of the container
     hostname: ubuntu # hostname
     privileged: true # Give the container the permission to manipulate the host
     #network_mode: "host"
@@ -14,7 +27,6 @@ services:
     entrypoint: /usr/bin/env
     #command: sh -c "{ ./bin/uhd_images_downloader.py && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf --nokrnmod 1 --noS1 --eNBs.[0].rrc_inactivity_threshold 0; } 2>&1 | tee /opt/oai-enb/logs.txt"
     command: sh -c "{ ./bin/uhd_images_downloader.py && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf; } 2>&1 | tee /opt/oai-enb/logs.txt"
-    #command: sh -c "ip a && ping -c 5 192.168.61.195"
     volumes: # Mounted from host
       - ./enb.conf:/opt/oai-enb/enb.conf:ro
       - ./logs.txt:/opt/oai-enb/logs.txt
