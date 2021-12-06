@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  check-gnb-connections:
+    image: rdefosseoai/oai-gnb:develop
+    container_name: check-gnb-connections # Name of the container
+    hostname: ubuntu # hostname
+    privileged: true # Give the container the permission to manipulate the host
+    networks:
+      demo-oai-public-net:
+        ipv4_address: 192.168.70.155
+    entrypoint: /usr/bin/env
+    command: sh -c "{ ping -c 5 192.168.70.132 && ping -c 5 192.168.70.134; } 2>&1 | tee /opt/oai-gnb/logs.txt"
+    volumes: # Mounted from host
+      - ./logs.txt:/opt/oai-gnb/logs.txt
+
+  oai-gnb: # Domain name of container
+    image: rdefosseoai/oai-gnb:develop
+    #restart: always # Operation Policy
+    container_name: oai-gnb # Name of the container
+    hostname: ubuntu # hostname
+    privileged: true # Give the container the permission to manipulate the host
+    #network_mode: "host"
+    networks:
+      demo-oai-public-net:
+        ipv4_address: 192.168.70.155
+    entrypoint: /usr/bin/env
+    command: sh -c "{ ./bin/uhd_images_downloader.py && exec /opt/oai-gnb/bin/nr-softmodem.Rel15 -O /opt/oai-gnb/gnb.conf -E --nokrnmod --sa; } 2>&1 | tee /opt/oai-gnb/logs.txt"
+    volumes: # Mounted from host
+      - ./gnb.conf:/opt/oai-gnb/gnb.conf:ro
+      - ./logs.txt:/opt/oai-gnb/logs.txt
+networks:
+  demo-oai-public-net:
+    external: true
