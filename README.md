@@ -123,7 +123,7 @@ You can configure the EPC by modifiying the docker-compose file located at
 
         https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/openair3/NAS/TOOLS/ue_sim_ci.conf
     
-    which is copied to `lte-ue/ue.conf` and you must modify it as the steps below    
+    which is copied to `lte-ue/ue_usim.conf` and you must modify it as the steps below    
 
 
 ## Configuration
