@@ -127,6 +127,9 @@ You can configure the EPC by modifiying the docker-compose file located at
 
     - Modify `PLMN` section and set the `MNC` and `MCC` values according to MME and eNB configuration.
     - In the `UE` section, set HPLMN which is *Home PLMN* as the concatination of `MCC`+`MNC` e.g. `MCC=222`,`MNC=01`, `PLMN=22201`. You must add `PLMN` code to the *Operator PLMN List* or `OPLMN_LIST` as well.
+    - `MSIN` or mobile subscription identification number is a 9 or 10 digit number within the network's customer base. 
+    - `IMSI` is a number that uniquely identifies every user of a cellular network. The first 3 digits represent `MCC`, which is followed by the `MNC`, either 2-digit (European standard) or 3-digit (North American standard). The remaining 9 or 10 digits are `MSIN`. The `IMSI` is stored in the SIM (the card inserted into the mobile phone), and uniquely identifies the mobile station, its home wireless network, and the home country of the home wireless network.
+    - `MSISDN` is a number uniquely identifying a subscription in GSM or UMTS. It is the mapping of the telephone number to the subscriber identity module in a mobile or cellular phone. The `IMSI` is stored in the SIM (the card inserted into the mobile phone), and uniquely identifies the mobile station, its home wireless network, and the home country of the home wireless network. The `MSISDN` is used for routing calls to the subscriber. The `IMSI` is often used as a key in the home location register ("subscriber database") and the `MSISDN` is the number normally dialed to connect a call to the mobile phone. A SIM has a unique `IMSI` that does not change, while the `MSISDN` can change in time, i.e. different `MSISDN`s can be associated with the SIM.
     - 
 
 ## Configuration
