@@ -93,10 +93,11 @@ You can configure the EPC by modifiying the docker-compose file located at
     - Modify `CI_MME_IP_ADDR` of `mme_ip_address.ipv4` so it matches MME configuration. 
     - Modify `CI_ENB_IP_ADDR` of `NETWORK_INTERFACES` section and set an arbitrary ip address for enb server in the `prod-oai-public-net` subnet. NOTE: if you are runing enb on the same machine, `ENB_INTERFACE_NAME_FOR_*` is not important. Otherwise, set it properly.
 
-3. Deploy
+3. Deploy and check the logs
 
-        docker-compose up oaienb
-        
+        docker-compose up -d prod-oai-enb
+        docker logs prod-oai-enb --follow
+   
     Undeploy
     
         docker-compose down
