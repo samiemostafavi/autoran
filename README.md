@@ -73,8 +73,8 @@ We use USRP B210 as the software-defined radio in this tutorial. There is a conf
 which is copied to `enodeb/enb.conf` and modified as the steps below
 
 - Modify `plmn_list` which consists of MCC, MNC, and TAC (`tracking_area_code`) so it matches MME configuration.
-- Modify `mme_ip_address.ipv4` so it matches MME configuration: "CI_MME_IP_ADDR"
-- Modify `NETWORK_INTERFACES` section and set an arbitrary ip address for enb server in the `prod-oai-public-net` subnet: "CI_ENB_IP_ADDR". NOTE: if you are runing enb on the same machine, `ENB_INTERFACE_NAME_FOR_*` is not important. Otherwise, set it properly.
+- Modify `CI_MME_IP_ADDR` of `mme_ip_address.ipv4` so it matches MME configuration. 
+- Modify `CI_ENB_IP_ADDR` of `NETWORK_INTERFACES` section and set an arbitrary ip address for enb server in the `prod-oai-public-net` subnet. NOTE: if you are runing enb on the same machine, `ENB_INTERFACE_NAME_FOR_*` is not important. Otherwise, set it properly.
 
 
 ## Using docker-compose
