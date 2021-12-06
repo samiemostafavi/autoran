@@ -127,10 +127,37 @@ You can configure the EPC by modifiying the docker-compose file located at
 
     - Modify `PLMN` section and set the `MNC` and `MCC` values according to MME and eNB configuration.
     - In the `UE` section, set HPLMN which is *Home PLMN* as the concatination of `MCC`+`MNC` e.g. `MCC=222`,`MNC=01`, `PLMN=22201`. You must add `PLMN` code to the *Operator PLMN List* or `OPLMN_LIST` as well.
-    - `MSIN` or mobile subscription identification number is a 9 or 10 digit number within the network's customer base. 
+    - `MSIN` or mobile subscription identification number is a 9 or 10 digit number within the network's customer base. Check HSS configuration and look for the `FIRST_IMSI` parameter. As explained below, you can find the first `MSIN` that you should pick for the UEs. Also check `NB_USERS` in HSS configurations. That would be the maximum number of UEs that are allowed into the LTE network. The UE `MSIN`s must be in this format: `UE#i MSIN = FIRST_MSIN + i (i=0,1,2,...)`.
     - `IMSI` is a number that uniquely identifies every user of a cellular network. The first 3 digits represent `MCC`, which is followed by the `MNC`, either 2-digit (European standard) or 3-digit (North American standard). The remaining 9 or 10 digits are `MSIN`. The `IMSI` is stored in the SIM (the card inserted into the mobile phone), and uniquely identifies the mobile station, its home wireless network, and the home country of the home wireless network.
+    - `USIM_API_K` must be set equal to `LTE_K` parameter is HSS server configuration.
+    - `OPC` should be generated from `LTE_K`, `OP_KEY`, and `RijndaelKeySchedule K`. The last one is not defined as a parameter in any config file of OAI. Probably it is hardcoded somewhere. `LTE_K` and `OP_KEY` are defined in HSS configuration. In order to set `OPC` there are 2 ways:
+        -   Generate it using [kiopcgenerator](https://github.com/PodgroupConnectivity/kiopcgenerator). Install the tool and run it as below
+        
+                kiopcgen -o [OP_KEY] -t [LTE_K] -k [RijndaelKeySchedule K]
+
+            For example:
+            
+                kiopcgen -o 63bfa50ee6523365ff14c1f45f88737d -t 0c0a34601d4f07677303652c0462535b -k 0C0A34601D4F07677303652C0462535B
+                {'KI': '0C0A34601D4F07677303652C0462535B',
+                'OPC': b'BA05688178E398BEDC100674071002CB',
+                'eKI': '4F3C9E8F870E54A0F287D18030A47329'}
+                
+            set 'OPC' to the output of the `kiopcgen` with the name 'OPC'.
+            
+        -   Look through HSS logs and check the keys generated for `NB_USERS` number of UEs. You can find what is `RijndaelKeySchedule K` from the logs as well.
+
+                docker logs prod-oai-hss
+                [2021-12-06T13:10:01.714] [hss] [system] [info] COUNT: 1 IMSI: 208960010000001 KEY: 0c0a34601d4f07677303652c0462535b OPC: 8e27b6af0e692e750f32667a3b14605d NEW OPC: ba05688178e398bedc100674071002cb
+                RijndaelKeySchedule: K 0C0A34601D4F07677303652C0462535B
+                Compute opc:
+                K:	0C0A34601D4F07677303652C0462535B
+                In:	63BFA50EE6523365FF14C1F45F88737D
+                Rinj:	D9BACD8F9EB1ABDB2304C780589871B6
+                Out:	BA05688178E398BEDC100674071002CB
+                
+            set 'OPC' to the output of the `Compute opc` with the name 'Out'.
+        
     - `MSISDN` is a number uniquely identifying a subscription in GSM or UMTS. It is the mapping of the telephone number to the subscriber identity module in a mobile or cellular phone. The `IMSI` is stored in the SIM (the card inserted into the mobile phone), and uniquely identifies the mobile station, its home wireless network, and the home country of the home wireless network. The `MSISDN` is used for routing calls to the subscriber. The `IMSI` is often used as a key in the home location register ("subscriber database") and the `MSISDN` is the number normally dialed to connect a call to the mobile phone. A SIM has a unique `IMSI` that does not change, while the `MSISDN` can change in time, i.e. different `MSISDN`s can be associated with the SIM.
-    - 
 
 ## Configuration
 
