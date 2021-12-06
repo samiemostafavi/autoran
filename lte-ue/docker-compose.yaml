@@ -9,7 +9,8 @@ services:
     privileged: true # Give the container the permission to manipulate the host
     network_mode: "host"
     entrypoint: /usr/bin/env
-    command: sh -c "{ ./bin/uhd_images_downloader.py && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1 --noS1; } 2>&1 | tee /opt/oai-lte-ue/logs.txt"
+    #command: sh -c "{ ./bin/uhd_images_downloader.py && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1 --noS1; } 2>&1 | tee /opt/oai-lte-ue/logs.txt"
+    command: sh -c "{ ./bin/uhd_images_downloader.py && ./bin/usim -g -c /app/ue_usim.conf && ./bin/nvram -g -c /app/ue_usim.conf  && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1; } 2>&1 | tee /opt/oai-lte-ue/logs.txt"
     volumes: # Mounted from host
       - ./logs.txt:/opt/oai-lte-ue/logs.txt
-
+      - ./ue_usim.conf:/app/ue_usim.conf
