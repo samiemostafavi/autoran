@@ -53,8 +53,8 @@ You can configure the EPC by modifiying the docker-compose file located at
 1. Pull enb docker image and clone this repository
 
         docker pull rdefosseoai/oai-enb:develop
-        git clone git@github.com:samiemostafavi/oai-lte-docker.git
-        cd ~/oai-lte-docker/enodeb
+        git clone git@github.com:samiemostafavi/oai-all-in-docker.git
+        cd ~/oai-all-in-docker/enodeb
    
     Check whether the USRP device is connected on the docker host (if uhd drivers are installed)
    
@@ -92,8 +92,8 @@ You can configure the EPC by modifiying the docker-compose file located at
 1. Pull enb docker image and clone this repository
 
         docker pull rdefosseoai/oai-lte-ue:develop
-        git clone git@github.com:samiemostafavi/oai-lte-docker.git
-        cd ~/oai-lte-docker/lte-ue
+        git clone git@github.com:samiemostafavi/oai-all-in-docker.git
+        cd ~/oai-all-in-docker/lte-ue
         
     Check whether the USRP device is connected on the docker host (if uhd drivers are installed)
    
