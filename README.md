@@ -72,10 +72,9 @@ You can configure the EPC by modifiying the docker-compose file located at
         git clone git@github.com:samiemostafavi/oai-lte-docker.git
         cd ~/oai-lte-docker/enodeb
    
-    Check whether the USRP device is connected
+    Check whether the USRP device is connected on the docker host
    
-        docker-compose up check-sdr
-        docker rm -f check-sdr
+        uhd_find_devices
         
     Check whether it can ping `MME` and `SPGW-C`
     
@@ -96,8 +95,11 @@ You can configure the EPC by modifiying the docker-compose file located at
 
 3. Deploy
 
-        docker-compose up -d enb
+        docker-compose up oaienb
         
+    Undeploy
+    
+        docker-compose down
 
 ## Using docker-compose
 
