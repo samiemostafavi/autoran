@@ -125,6 +125,9 @@ You can configure the EPC by modifiying the docker-compose file located at
     
     which is copied to `lte-ue/ue_usim.conf` and you must modify it as the steps below    
 
+    - Modify `PLMN` section and set the `MNC` and `MCC` values according to MME and eNB configuration.
+    - In the `UE` section, set HPLMN which is *Home PLMN* as the concatination of `MCC`+`MNC` e.g. `MCC=222`,`MNC=01`, `PLMN=22201`. You must add `PLMN` code to the *Operator PLMN List* or `OPLMN_LIST` as well.
+    - 
 
 ## Configuration
 
