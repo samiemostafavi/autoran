@@ -1,6 +1,6 @@
 # Setup Schematic
 
-![Setup Schematic](https://github.com/samiemostafavi/oai-lte-docker/blob/main/OAICN-Network-Deployment-Explanation.png "Setup Schematic")
+![Setup Schematic](OAICN-Network-Deployment-Explanation.png "Setup Schematic")
 
 
 # Step 1. Start LTE Evolved Packet Core (EPC)
