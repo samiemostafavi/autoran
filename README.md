@@ -74,13 +74,13 @@ You can configure the EPC by modifiying the docker-compose file located at
    
     Check whether the USRP device is connected
    
-        docker-compose up -d check_sdr
-        docker rm -f check_sdr
+        docker-compose up -d check-sdr
+        docker rm -f check-sdr
         
     Check whether it can ping `MME` and `SPGW-C`
     
-        docker-compose up -d check_connections
-        docker rm -f check_connections
+        docker-compose up -d check-enb-connections
+        docker rm -f check-enb-connections
 
 2. Modify the configuration file
 
