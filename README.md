@@ -53,6 +53,11 @@ You can configure the EPC by modifiying the docker-compose file located at
     
         docker ps -a
         docker logs prod-oai-hss
+        
+    Check the deployed containers networks and ip of each service
+    
+        docker network ls
+        docker network inspect prod-oai-public-net
     
 3. Undeploy
 
