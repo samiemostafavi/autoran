@@ -159,55 +159,22 @@ You can configure the EPC by modifiying the docker-compose file located at
         
     - `MSISDN` is a number uniquely identifying a subscription in GSM or UMTS. It is the mapping of the telephone number to the subscriber identity module in a mobile or cellular phone. The `IMSI` is stored in the SIM (the card inserted into the mobile phone), and uniquely identifies the mobile station, its home wireless network, and the home country of the home wireless network. The `MSISDN` is used for routing calls to the subscriber. The `IMSI` is often used as a key in the home location register ("subscriber database") and the `MSISDN` is the number normally dialed to connect a call to the mobile phone. A SIM has a unique `IMSI` that does not change, while the `MSISDN` can change in time, i.e. different `MSISDN`s can be associated with the SIM. You can leave this parameter to the default value.
 
-For furthur information, read more at:
+    For furthur information, read more at:
 
-    https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/how-to-run-oaisim-with-multiple-ue
-    https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/doc/BASIC_SIM.md
-    https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/l2-nfapi-simulator/l2-nfapi-simulator-w-S1-same-machine#3-retrieve-the-oai-enb-ue-source-code
-    https://github.com/danielgora/openair-epc-fed/blob/develop/docs/EPC_IN_A_BOX.md
+        https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/how-to-run-oaisim-with-multiple-ue
+        https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/doc/BASIC_SIM.md
+        https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/l2-nfapi-simulator/l2-nfapi-simulator-w-S1-same-machine#3-retrieve-the-oai-enb-ue-source-code
+        https://github.com/danielgora/openair-epc-fed/blob/develop/docs/EPC_IN_A_BOX.md
+
+3. Deploy and check the logs
+
+        docker-compose up -d prod-oai-lte-ue
+        docker logs prod-oai-lte-ue --follow
+   
+    Undeploy
     
+        docker-compose down 
     
-    
-
-An important point from mailing list with the name `UE-softmodem fails to add ip address`:
-
-I would say `nasmesh` is not much more worked on
-here at Eurecom. So use `--nokrnmod 1` all the time.
-
-## Using docker-compose
-
-To start:
-
-    cd lte-ue
-    docker pull rdefosseoai/oai-lte-ue:develop
-    docker-compose -f docker-compose.yaml up
-
-Then remove the container:
-
-    docker stop /oaiue
-    docker rm /oaiue
-
-## Using Docker CLI
-
-on the host:
-
-    docker pull rdefosseoai/oai-lte-ue:develop
-
-run the container and override entrypoint:
-
-    docker run -it --net=host --privileged --entrypoint /bin/bash rdefosseoai/oai-lte-ue:develop
-    
-    docker run -it --net=host --privileged --entrypoint /bin/bash --mount type=bind,source=/home/wlab/oai-ran-docker/lte-ue,target=/app rdefosseoai/oai-lte-ue:develop
-
-in the container:
-
-    ./bin/uhd_images_downloader.py
-    
-    ./bin/usim -g -c /app/ue_usim.conf
-    
-    /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1 --noS1
-    
-    ./bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier
-    
+    NOTE: According to Raphael in an answer to mailing list with the subject `UE-softmodem fails to add ip address`, `nasmesh` is not much more worked on at Eurecom. So use `--nokrnmod 1` all the time for OAI UE.
     
 
