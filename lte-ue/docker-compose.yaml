@@ -1,10 +1,10 @@
 version: '2'
 
 services:
-  oaienb: # Domain name of container
+  prod-oai-lte-ue: # Domain name of container
     image: rdefosseoai/oai-lte-ue:develop
     restart: always # Operation Policy
-    container_name: oaiue # Name of the container
+    container_name: prod-oai-lte-ue # Name of the container
     hostname: ubuntu # hostname
     privileged: true # Give the container the permission to manipulate the host
     network_mode: "host"
