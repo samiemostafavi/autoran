@@ -49,9 +49,10 @@ You can configure the EPC by modifiying the docker-compose file located at
         docker rm -f prod-db-init
         docker-compose up -d oai_spgwu
 
-    Check if the containers are up
+    Check if the containers are up or logs
     
         docker ps -a
+        docker logs prod-oai-hss
     
 3. Undeploy
 
