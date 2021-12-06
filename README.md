@@ -22,9 +22,9 @@ Docker images: https://hub.docker.com/u/rdefosseoai
 # Step 1. Start LTE Evolved Packet Core (EPC)
 
 Openairinterface LTE EPC consists of:
-1. HSS
-2. MME
-3. SPGW-U+SPGW-C
+- HSS
+- MME
+- SPGW-U+SPGW-C
 
 The federation repository is located at https://github.com/OPENAIRINTERFACE/openair-epc-fed.
 
@@ -33,6 +33,30 @@ There is 2 options regarding deployment of MME in Openairinterface:
 - Legacy MME [Start here](https://github.com/OPENAIRINTERFACE/openair-epc-fed/blob/master/docs/DEPLOY_HOME.md) *
 
 *Currently, OAI UE does not connect to Magma MME. Hence, in this tutorial we use `Legacy MME` which is not stable and could need restart after a few hours.
+
+You can configure the EPC by modifiying the docker-compose file located at
+
+    openair-epc-fed/docker-compose/oai-mme-legacy/docker-compose.yml
+
+1. Init database
+
+        cd openair-epc-fed/docker-compose/oai-mme-legacy/
+        docker-compose up -d db_init
+        docker logs prod-db-init --follow
+
+2. After getting init *ok*, Deploy
+        
+        docker rm -f prod-db-init
+        docker-compose up -d oai_spgwu
+
+    Check if the containers are up
+    
+        docker ps -a
+    
+3. Undeploy
+
+        docker-compose down
+    
 
 # Step 2. Start LTE EnB
 
