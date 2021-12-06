@@ -66,10 +66,21 @@ You can configure the EPC by modifiying the docker-compose file located at
 
 # Step 2. Start LTE EnB
 
-1. Initialize and clone this repository
+1. Pull enb docker image and clone this repository
 
+        docker pull rdefosseoai/oai-enb:develop
         git clone git@github.com:samiemostafavi/oai-lte-docker.git
-        cd ~/oai-lte-docker/enodeb     
+        cd ~/oai-lte-docker/enodeb
+   
+    Check whether the USRP device is connected
+   
+        docker-compose up -d check_sdr
+        docker rm -f check_sdr
+        
+    Check whether it can ping `MME` and `SPGW-C`
+    
+        docker-compose up -d check_connections
+        docker rm -f check_connections
 
 2. Modify the configuration file
 
@@ -83,6 +94,10 @@ You can configure the EPC by modifiying the docker-compose file located at
     - Modify `CI_MME_IP_ADDR` of `mme_ip_address.ipv4` so it matches MME configuration. 
     - Modify `CI_ENB_IP_ADDR` of `NETWORK_INTERFACES` section and set an arbitrary ip address for enb server in the `prod-oai-public-net` subnet. NOTE: if you are runing enb on the same machine, `ENB_INTERFACE_NAME_FOR_*` is not important. Otherwise, set it properly.
 
+3. Deploy
+
+        docker-compose up -d enb
+        
 
 ## Using docker-compose
 
