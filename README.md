@@ -66,15 +66,22 @@ You can configure the EPC by modifiying the docker-compose file located at
 
 # Step 2. Start LTE EnB
 
-We use USRP B210 as the software-defined radio in this tutorial. There is a config file located at 
+1. Initialize and clone this repository
 
-    https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/enb.band7.tm1.fr1.25PRB.usrpb210.conf
+        git clone git@github.com:samiemostafavi/oai-lte-docker.git
+        cd ~/oai-lte-docker/enodeb     
+
+2. Modify the configuration file
+
+    We use USRP B210 as the software-defined radio in this tutorial. There is a config file located at 
+
+        https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/enb.band7.tm1.fr1.25PRB.usrpb210.conf
     
-which is copied to `enodeb/enb.conf` and modified as the steps below
+    which is copied to `enodeb/enb.conf` and you must modify it as the steps below
 
-- Modify `plmn_list` which consists of MCC, MNC, and TAC (`tracking_area_code`) so it matches MME configuration.
-- Modify `CI_MME_IP_ADDR` of `mme_ip_address.ipv4` so it matches MME configuration. 
-- Modify `CI_ENB_IP_ADDR` of `NETWORK_INTERFACES` section and set an arbitrary ip address for enb server in the `prod-oai-public-net` subnet. NOTE: if you are runing enb on the same machine, `ENB_INTERFACE_NAME_FOR_*` is not important. Otherwise, set it properly.
+    - Modify `plmn_list` which consists of MCC, MNC, and TAC (`tracking_area_code`) so it matches MME configuration.
+    - Modify `CI_MME_IP_ADDR` of `mme_ip_address.ipv4` so it matches MME configuration. 
+    - Modify `CI_ENB_IP_ADDR` of `NETWORK_INTERFACES` section and set an arbitrary ip address for enb server in the `prod-oai-public-net` subnet. NOTE: if you are runing enb on the same machine, `ENB_INTERFACE_NAME_FOR_*` is not important. Otherwise, set it properly.
 
 
 ## Using docker-compose
