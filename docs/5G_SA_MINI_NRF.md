@@ -60,6 +60,10 @@ We choose a mini deployment with NRF as described [here](https://gitlab.eurecom.
 		https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/gnb.band78.tm1.fr1.106PRB.usrpb210.conf
 		https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/gNB_SA_n78_106PRB.2x2_usrpn310.conf
 	
+	Another option is to use the following config file:
+	
+		https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf
+	
 	* Modify `plmn_list` which consists of `MCC`, `MNC`, `TAC` (tracking_area_code), and `snssai` List of (`sst`,`sd`)s so it matches AMF configuration.
 	* Modify `CI_AMF_IP_ADDR` to AMF ip.
 	* Modify `CI_GNB_IP_ADDR` of `NETWORK_INTERFACES` section and set an arbitrary ip address for gnb server in the demo-oai-public-net subnet. NOTE: if you are runing enb on the same machine, `GNB_INTERFACE_NAME_FOR_*` is not important. Otherwise, set it properly.
@@ -99,8 +103,6 @@ We choose a mini deployment with NRF as described [here](https://gitlab.eurecom.
 	We use the frequency configuration defined in USRP B210 non-standalone conf file and according to [here](https://gitlab.eurecom.fr/oai/openairinterface5g/blob/develop/doc/RUNMODEM.md#run-oai-in-sa-mode), `nr-ursoftmodem` should be run with these configuration: `-r 106 --numerology 1 --band 78 -C 3619200000  --sa`.
 	
 	Another option is to use band 66 according to [here](https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/doc/RUNMODEM.md#run-oai-with-custom-dlul-arbitrary-frequencies).
-
-
 
 For more information read more in the following links:
 
