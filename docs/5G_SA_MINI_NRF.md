@@ -1,5 +1,10 @@
 # Setup Schematic
 
+IMPORTANT Documentations:
+
+	https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/doc/TESTING_5GSA_setup.md
+
+
 ![Setup Schematic](5gCN-mini.jpeg "Setup Schematic")
 
 # 1. Start 5G Standalone Mini Core Network (CN) with NRF
