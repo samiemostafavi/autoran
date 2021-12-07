@@ -60,7 +60,7 @@ We choose a mini deployment with NRF as described [here](https://gitlab.eurecom.
 		https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/gnb.band78.tm1.fr1.106PRB.usrpb210.conf
 		https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/ci-scripts/conf_files/gNB_SA_n78_106PRB.2x2_usrpn310.conf
 	
-	Another option is to use the following config file:
+	Another option is to use the following config file, which is USRP B210 5G standalone for band 78:
 	
 		https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf
 	
