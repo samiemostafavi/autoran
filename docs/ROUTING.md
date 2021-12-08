@@ -40,6 +40,10 @@ Configure the routing so you can ping `enp5s0` on `finarfin` with an arbitrary i
 	`12.1.1.1` is the gateway for UEs with IP in the range `12.1.1.0/24`. It points tward `oai_spgwu`.
 
 
+4. On UE:
+		
+		$ sudo ip route add 10.0.0.0/24 via 10.0.1.4 dev eth0
+
 Run bash inside a container by running
 
 	$ docker exec -it <name of the container> /bin/bash
