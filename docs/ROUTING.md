@@ -10,7 +10,7 @@ Configure the routing so you can ping `enp5s0` on `finarfin` with an arbitrary i
 
 2. By running this on EPC host, I could ping UEs from EPC host. So we know that the ping response can go back:
 
-		$ sudo ip route add 12.1.1.0/24 via 192.168.61.197 dev br-68cb1f58ee58
+		$ sudo ip route add 12.1.1.0/24 via 192.168.61.197
 		$ ip route show
 		12.1.1.0/24 via 192.168.61.197 dev br-68cb1f58ee58
 		$ ping 12.1.1.2
