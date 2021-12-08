@@ -27,7 +27,11 @@ Configure the routing so you can ping `enp5s0` on `finarfin` with an arbitrary i
 		...
 		10.0.0.0/24 via 12.1.1.1 dev oaitun_ue1
 		...
-		$ ping 192.168.61.197
+		$ ping 10.0.0.5
+		PING 192.168.61.197 (192.168.61.197) 56(84) bytes of data.
+		64 bytes from 192.168.61.197: icmp_seq=1 ttl=64 time=20.7 ms
+		64 bytes from 192.168.61.197: icmp_seq=2 ttl=64 time=28.7 ms
+		$ ping 10.0.0.6
 		PING 192.168.61.197 (192.168.61.197) 56(84) bytes of data.
 		64 bytes from 192.168.61.197: icmp_seq=1 ttl=64 time=20.7 ms
 		64 bytes from 192.168.61.197: icmp_seq=2 ttl=64 time=28.7 ms
