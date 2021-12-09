@@ -3,7 +3,8 @@
 IMPORTANT Documentations:
 
 	https://gitlab.eurecom.fr/oai/openairinterface5g/-/blob/develop/doc/TESTING_5GSA_setup.md
-
+	https://openairx-labs.northeastern.edu/deploying-oai-in-5g-standalone-mode/
+	
 
 ![Setup Schematic](5gCN-mini.jpeg "Setup Schematic")
 
