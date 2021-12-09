@@ -72,6 +72,12 @@ Inside `oai_spgwu`, added a route to forward `10.0.0.0/24` traffic to the
 	
 		$ sudo ip route add 10.0.0.0/24 via 172.17.0.1 dev tun0
 	
+	undeploy:
+	
+		$ sudo ip route del 192.168.61.192/26
+		$ sudo ip route del 10.0.0.0/24
+		$ sudo ip tunnel del tun0
+		
 		
 2. On ENB Host, expose UE ips assigned by LTE through spgw-u:
 
@@ -91,4 +97,9 @@ Inside `oai_spgwu`, added a route to forward `10.0.0.0/24` traffic to the
 	
 		$ sudo ip route add 10.0.1.0/24 via 172.17.0.2 dev tun0
 		
-
+	undeploy:
+	
+		$ sudo ip route del 12.1.1.0/24
+		$ sudo ip route del 10.0.1.0/24
+		$ sudo ip tunnel del tun0
+		
