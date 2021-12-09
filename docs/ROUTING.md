@@ -1,4 +1,4 @@
-# Expose eNodeB interfaces to UE and vice versa
+# Expose OAI eNodeB interfaces to OAI UE and vice versa
 
 
 1. On ENB Host, expose UE ips assigned by LTE through spgw-u:
@@ -36,7 +36,15 @@
 6. On eNB Host, expose UE host interfaces:
 	
 		$ sudo ip route add 10.0.1.0/24 via 172.17.0.2 dev tun0
-		
+
+- On UE Host, test:
+
+		$ ping 10.0.0.5
+
+- On eNB Host, test:
+
+		$ ping 10.0.1.4
+
 - On UE Host, undeploy:		
 	
 		$ sudo ip route del 192.168.61.192/26
