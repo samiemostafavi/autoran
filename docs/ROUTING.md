@@ -1,6 +1,9 @@
 # Expose OAI eNodeB interfaces to OAI UE and vice versa
 
-After the UE is connected to LTE network and the interface `oaitun_ue1` is established, go through the steps below, in order.
+
+After a UE is connected to the LTE network and the interface `oaitun_ue1` is established, it has the ip address `UE_IP_ADDR` from `12.0.0.0/24` subnet. 
+
+Then, go through the steps below, in order.
 
 1. On ENB Host, expose UE ips assigned by LTE through spgw-u:
 
