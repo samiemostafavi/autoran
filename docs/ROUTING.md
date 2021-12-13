@@ -48,13 +48,13 @@ After the UE is connected to LTE network and the interface `oaitun_ue1` is estab
 
 - On UE Host, undeploy:		
 	
-		$ sudo ip route del 192.168.61.192/26
 		$ sudo ip route del 10.0.0.0/24
 		$ sudo ip tunnel del tun0
+		$ sudo ip route del 192.168.61.192/26
 
 - On eNB Host, undeploy:
 	
-		$ sudo ip route del 12.1.1.0/24
 		$ sudo ip route del 10.0.1.0/24
 		$ sudo ip tunnel del tun0
+		$ sudo ip route del 12.1.1.0/24
 		
