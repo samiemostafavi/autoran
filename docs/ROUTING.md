@@ -1,6 +1,6 @@
 # Setup Schematic
 
-![Setup Schematic](lte_routing_schematic.jpg "Setup Schematic")
+![Setup Schematic](lte_routing_schematic_new.jpg "Setup Schematic")
 
 # Expose OAI eNodeB interfaces to OAI UE and vice versa
 
