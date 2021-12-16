@@ -92,11 +92,21 @@ Then, go through the steps below, in order.
 		
 7. On UE Host, with workload interface `enp4s0` and cellular interface `oaitun_ue1` configure port forwarding using `iptables`:
 
-		iptables -t nat -A POSTROUTING -o enp4s0 -j MASQUERADE
-		iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -m state --state RELATED,ESTABLISHED -j ACCEPT
-		iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -j ACCEPT
+- First, take a backup from `iptables` configurations:
+
+		sudo sh -c "{ iptables-save > /root/dsl.fw; }"
 		
-		iptables -t nat -A POSTROUTING -o oaitun_ue1 -j MASQUERADE
-		iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-		iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -j ACCEPT
+- Then, run the commands:
+
+		sudo iptables -t nat -A POSTROUTING -o enp4s0 -j MASQUERADE
+		sudo iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+		sudo iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -j ACCEPT
+		
+		sudo iptables -t nat -A POSTROUTING -o oaitun_ue1 -j MASQUERADE
+		sudo iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+		sudo iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -j ACCEPT
+
+- On UE Host, undeploy each `iptables` command:
+
+		sudo sh -c "{ iptables-restore < /root/dsl.fw; }"
 
