@@ -116,6 +116,14 @@ Then, go through the steps below, in order.
 	
 		sudo iptables -t nat -nvL --line-numbers
 		
+	Show other rules with line numbers:
+	
+		sudo iptables -nvL --line-numbers
+		
 	Delete nat postrouting rule number 6:
+	
+		sudo iptables -D POSTROUTING 6 -t nat
+
+	Delete postrouting rule number 6:
 	
 		sudo iptables -D POSTROUTING 6 -t nat
