@@ -89,3 +89,14 @@ Then, go through the steps below, in order.
 		
 		$ sudo ip route del 12.1.1.0/24
 		
+		
+7. On UE Host, with workload interface `enp4s0` and cellular interface `oaitun_ue1` configure port forwarding using `iptables`:
+
+		iptables -t nat -A POSTROUTING -o enp4s0 -j MASQUERADE
+		iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -m state --state RELATED,ESTABLISHED -j ACCEPT
+		iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -j ACCEPT
+		
+		iptables -t nat -A POSTROUTING -o oaitun_ue1 -j MASQUERADE
+		iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+		iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -j ACCEPT
+
