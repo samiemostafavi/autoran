@@ -110,3 +110,12 @@ Then, go through the steps below, in order.
 
 		sudo sh -c "{ iptables-restore < /root/dsl.fw; }"
 
+- Usefull `iptables` commands:
+
+	Show nat rules with line numbers:
+	
+		sudo iptables -t nat -nvL --line-numbers
+		
+	Delete nat postrouting rule number 6:
+	
+		sudo iptables -D POSTROUTING 6 -t nat
