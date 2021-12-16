@@ -90,7 +90,7 @@ Then, go through the steps below, in order.
 		$ sudo ip route del 12.1.1.0/24
 		
 		
-7. On UE Host, with workload interface `enp4s0` and cellular interface `oaitun_ue1` configure port forwarding using `iptables`:
+7. On UE Host, with workload interface `enp4s0` and the created tunnel `tun0` configure port forwarding using `iptables`:
 
 - First, take a backup from `iptables` configurations:
 
@@ -99,12 +99,12 @@ Then, go through the steps below, in order.
 - Then, run the commands:
 
 		sudo iptables -t nat -A POSTROUTING -o enp4s0 -j MASQUERADE
-		sudo iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -m state --state RELATED,ESTABLISHED -j ACCEPT
-		sudo iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -j ACCEPT
+		sudo iptables -A FORWARD -i enp4s0 -o tun0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+		sudo iptables -A FORWARD -i tun0 -o enp4s0 -j ACCEPT
 		
 		sudo iptables -t nat -A POSTROUTING -o oaitun_ue1 -j MASQUERADE
-		sudo iptables -A FORWARD -i oaitun_ue1 -o enp4s0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-		sudo iptables -A FORWARD -i enp4s0 -o oaitun_ue1 -j ACCEPT
+		sudo iptables -A FORWARD -i tun0 -o enp4s0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+		sudo iptables -A FORWARD -i enp4s0 -o tun0 -j ACCEPT
 
 - On UE Host, undeploy each `iptables` command:
 
