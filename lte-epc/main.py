@@ -157,8 +157,24 @@ def hss(client, private_network, public_network, self_private_ip, self_public_ip
 
     client.connect_container_to_network(container,public_network['name'],ipv4_address=self_public_ip)
 
+    logger.info('HSS service starting...')
+
     # start the container
     client.start(container)
+
+    success = False
+    for i in range(1,10):
+        time.sleep(1)
+        logs = client.logs(container,stdout=True, stderr=True, tail='all')
+        logs = logs.decode().rstrip()
+        #print(logs)
+        if "Started REST server" in logs:
+            success = True
+            break
+    if not success:
+        logger.error('HSS booting up timeout.')
+        raise Exception('HSS booting up timeout.')
+
 
     logger.info('HSS service successfully started at {0} with ip {1} and {2} with ip {3}.'.format(private_network['name'],self_private_ip,public_network['name'],self_public_ip))
     
@@ -230,8 +246,23 @@ def mme(client, public_network, self_public_ip, hss_public_ip, spgwc_public_ip):
         ),
     )
 
+    logger.info('MME-legacy service starting...')
+
     # start the container
     client.start(container)
+
+    success = False
+    for i in range(1,10):
+        time.sleep(1)
+        logs = client.logs(container,stdout=True, stderr=True, tail='all')
+        logs = logs.decode().rstrip()
+        #print(logs)
+        if "Received SCTP_INIT_MSG" in logs:
+            success = True
+            break
+    if not success:
+        logger.error('MME booting up timeout.')
+        raise Exception('MME booting up timeout.')
 
     logger.info('MME-legacy service successfully started at {0} with ip {1}.'.format(public_network['name'],self_public_ip))
 
