@@ -85,7 +85,7 @@ def enb(client, public_network, self_public_ip, mme_public_ip, conf_file, entry_
         },
         #entrypoint='/usr/bin/env',
         #command="/bin/bash -c  \" ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf; \" "
-        #command="/bin/bash -c  \" ./opt/oai-enb/entrypoint.sh  && ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf; \" "
+        #command="/bin/bash -c  \" chmod +x /opt/oai-enb/entrypoint.sh && /opt/oai-enb/entrypoint.sh  && ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf; \" "
     )
 
     # start the container
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     # create and run enb container
     #conf_file = "/home/wlab/oai-all-in-docker/enodeb/enb.conf"
     conf_file = "/home/wlab/oai-all-in-docker/enodeb/generic.conf"
-    entry_file = "/home/wlab/oai-all-in-docker/enodeb/entry_point.conf"
+    entry_file = "/home/wlab/oai-all-in-docker/enodeb/entrypoint.sh"
     enb_container = enb(client,public_network_dict,enb_public_ip, mme_public_ip, conf_file, entry_file)
 
 
