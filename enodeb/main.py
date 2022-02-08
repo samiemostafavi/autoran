@@ -35,7 +35,7 @@ def enbipcheck(client, public_network, self_public_ip,mme_public_ip,spgwc_public
 
     return container
 
-def enb(client, public_network, self_public_ip, conf_file):
+def enb(client, public_network, self_public_ip, mme_public_ip, conf_file, entry_file):
 
     networking_config = client.create_networking_config({
         public_network['name']: client.create_endpoint_config(
@@ -47,16 +47,45 @@ def enb(client, public_network, self_public_ip, conf_file):
         image='rdefosseoai/oai-enb:develop',
         name='prod-oai-enb',
         hostname='ubuntu',
-        volumes=['/opt/oai-enb/enb.conf'],
+        volumes=['/opt/oai-enb/enb.conf','/opt/oai-enb/entrypoint.sh'],
         host_config=client.create_host_config(
             privileged=True,
             binds=[
                 '{0}:/opt/oai-enb/enb.conf'.format(conf_file),
+                '{0}:/opt/oai-enb/entrypoint.sh'.format(entry_file),
             ],
         ),
         networking_config=networking_config,
-        entrypoint='/usr/bin/env',
-        command="/bin/bash -c  \" ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf; \" "
+        environment={
+            "USE_FDD_MONO": 1,
+            "USE_B2XX": 1,
+            'ENB_NAME':'eNB-Eurecom-LTEBox',
+            'TAC':1,
+            'MCC':208,
+            'MNC':96,
+            'MNC_LENGTH':2,
+            'RRC_INACTIVITY_THRESHOLD':30,
+            'UTRA_BAND_ID':7,
+            'DL_FREQUENCY_IN_MHZ':2680,
+            'UL_FREQUENCY_OFFSET_IN_MHZ':120,
+            'NID_CELL':0,
+            'NB_PRB':25,
+            'ENABLE_MEASUREMENT_REPORTS':'yes',
+            'MME_S1C_IP_ADDRESS':mme_public_ip,
+            'ENABLE_X2':'yes',
+            'ENB_X2_IP_ADDRESS':self_public_ip,
+            'ENB_S1C_IF_NAME':'eth0',
+            'ENB_S1C_IP_ADDRESS':self_public_ip,
+            'ENB_S1U_IF_NAME':'eth0',
+            'ENB_S1U_IP_ADDRESS':self_public_ip,
+            'THREAD_PARALLEL_CONFIG':'PARALLEL_SINGLE_THREAD',
+            'FLEXRAN_ENABLED':'no',
+            'FLEXRAN_INTERFACE_NAME':'eth0',
+            'FLEXRAN_IPV4_ADDRESS':'CI_FLEXRAN_CTL_IP_ADDR',
+        },
+        #entrypoint='/usr/bin/env',
+        #command="/bin/bash -c  \" ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf; \" "
+        #command="/bin/bash -c  \" ./opt/oai-enb/entrypoint.sh  && ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && exec /opt/oai-enb/bin/lte-softmodem.Rel15 -O /opt/oai-enb/enb.conf; \" "
     )
 
     # start the container
@@ -122,8 +151,10 @@ if __name__ == "__main__":
 
     
     # create and run enb container
-    conf_file = "/home/wlab/oai-all-in-docker/enodeb/enb.conf"
-    enb_container = enb(client,public_network_dict,enb_public_ip, conf_file)
+    #conf_file = "/home/wlab/oai-all-in-docker/enodeb/enb.conf"
+    conf_file = "/home/wlab/oai-all-in-docker/enodeb/generic.conf"
+    entry_file = "/home/wlab/oai-all-in-docker/enodeb/entry_point.conf"
+    enb_container = enb(client,public_network_dict,enb_public_ip, mme_public_ip, conf_file, entry_file)
 
 
     input("Press any key to continue...")
