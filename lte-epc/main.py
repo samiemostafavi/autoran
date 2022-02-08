@@ -403,12 +403,12 @@ if __name__ == "__main__":
     input("Press any key to continue...")
 
     try:
-        client.kill(spgwc_container)
+        client.kill(spgwu_container)
     except:
         pass
 
     try:
-        client.remove_container(spgwc_container)
+        client.remove_container(spgwu_container)
     except:
         pass
 
