@@ -30,8 +30,8 @@ def ue(client, conf_file, entry_file):
             "MSISDN":"33611123456",
         },
         entrypoint='/usr/bin/env',
-        command="/bin/bash -c  \" ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && ./bin/usim -g -c /opt/oai-lte-ue/ue_usim.conf && ./bin/nvram -g -c /opt/oai-lte-ue/ue_usim.conf  && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1; \" "
-        #command="/bin/bash -c  \" chmod +x /opt/oai-lte-ue/entrypoint.sh && /opt/oai-lte-ue/entrypoint.sh  && ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && ./bin/usim -g -c /opt/oai-lte-ue/ue_usim.conf && ./bin/nvram -g -c /opt/oai-lte-ue/ue_usim.conf  && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1; \" "
+        #command="/bin/bash -c  \" ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && ./bin/usim -g -c /opt/oai-lte-ue/ue_usim.conf && ./bin/nvram -g -c /opt/oai-lte-ue/ue_usim.conf  && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1; \" "
+        command="/bin/bash -c  \" chmod +x /opt/oai-lte-ue/entrypoint.sh && /opt/oai-lte-ue/entrypoint.sh  && ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && ./bin/usim -g -c /opt/oai-lte-ue/ue_usim.conf && ./bin/nvram -g -c /opt/oai-lte-ue/ue_usim.conf  && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1; \" "
     )
 
     # start the container
