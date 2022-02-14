@@ -4,7 +4,7 @@ import time
 from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
-
+from lte_py.utils import DockerNetwork, DockerService 
 
 # EPC Cassandra Database Service
 class Cassandra(DockerService):
