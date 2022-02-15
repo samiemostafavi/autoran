@@ -5,8 +5,8 @@ from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
 
-from lte_py.utils import DockerNetwork, DockerService
-from lte_py.enodeb import ENodeB
+from lib.utils import DockerNetwork, DockerService
+from lib.lte_py.enodeb import ENodeB
 
 if __name__ == "__main__":
 

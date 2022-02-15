@@ -1,8 +1,9 @@
 import docker
 import time
 from loguru import logger
-from lte_py.utils import DockerNetwork, DockerService
-from lte_py.ue import LTEUE
+
+from lib.utils import DockerNetwork, DockerService
+from lib.lte_py.ue import LTEUE
 
 if __name__ == "__main__":
 

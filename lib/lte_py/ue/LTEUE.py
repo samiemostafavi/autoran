@@ -1,7 +1,7 @@
 import docker
 import time
 from loguru import logger
-from lte_py.utils import DockerNetwork, DockerService
+from lib.utils import DockerNetwork, DockerService
 
 class LTEUE(DockerService):
 

@@ -4,8 +4,9 @@ import time
 from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
-from lte_py.epc import *
-from lte_py.utils import *
+
+from lib.lte_py.epc import *
+from lib.utils import *
 
 if __name__ == "__main__":
 

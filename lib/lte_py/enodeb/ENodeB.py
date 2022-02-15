@@ -2,7 +2,7 @@ from ipaddress import IPv4Interface, IPv4Network, IPv4Address
 import docker
 import time
 from loguru import logger
-from lte_py.utils import DockerNetwork, DockerService
+from lib.utils import DockerNetwork, DockerService
 
 class ENodeB(DockerService):
     def __init__(self,
