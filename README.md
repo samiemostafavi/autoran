@@ -24,6 +24,6 @@ Docker images: https://hub.docker.com/u/rdefosseoai
 
 # OAI Python API
 
-This section is related to a Python library provided in this repository which is called `oai-py`. Instead of running the docker commands manually on the radio hosts, you can write a Python script from anywhere accessible through the network and run the radio access network or the core network remotely and automatic.
+This section is related to a Python library provided in this repository which is called `oai-py`. Instead of running the docker commands manually on the radio hosts, you can use this library and run a Python script from anywhere accessible through the network and run the radio access network or the core network remotely and automatic. We use `docker-py` as the main tool to interact with the radio and packet core hosts.
 
 - [How to start an End-to-End SDR-based LTE network using OAI-py](docs/LTE-oaipy.md)
