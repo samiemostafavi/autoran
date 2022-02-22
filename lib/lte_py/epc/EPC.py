@@ -1,10 +1,15 @@
 from ipaddress import IPv4Interface, IPv4Network, IPv4Address
 import docker
 import time
+import re
 from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
-from lib.utils import DockerNetwork, DockerService 
+from lib.utils import DockerNetwork, DockerService
+from .EPCRouter import CoreRouter
+import threading
+import time
+
 
 # EPC Cassandra Database Service
 class Cassandra(DockerService):
@@ -323,6 +328,290 @@ class SPGWU(DockerService):
         logger.info('{0} service successfully started at {1} with ip {2}.'.format(self.name,self.client.base_url,ip))
 
 
+class LogsCheckerThread (threading.Thread):
+    def __init__(self, threadID, name, client, container, line_based, events_keys, epc):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.client = client
+        self.container = container
+        self._kill = threading.Event()
+        self._interval = 0.1
+        self.line_based = line_based
+        self.events_keys = events_keys
+        self.epc = epc
+
+    def run(self):
+        logger.info('Thread {0} successfully started at {1}.'.format(self.name,self.client.base_url))
+       
+        events_keys = self.events_keys
+        complete_logs = ''
+        while True:
+            is_killed = self._kill.wait(self._interval)
+            if is_killed:
+                break
+
+            new_complete_logs = self.client.logs(self.container, stdout=True, stderr=True, tail='all').decode()
+            logs = new_complete_logs.replace(complete_logs,'',1)
+            complete_logs = new_complete_logs
+
+            if logs:
+                #print(logs)
+                events_results = {}
+                for event in events_keys:
+                    if self.line_based:
+                        lines = logs.splitlines()
+                        for line in lines:
+                            for ele in events_keys[event]:
+                                if ele in line:
+                                    if event not in events_results:
+                                        events_results[event] = {}
+                                    events_results[event][events_keys[event][ele][1]] = line.split()[events_keys[event][ele][0]]
+                    else:
+                        if events_keys[event]['main_key'] in logs:
+                            for ele in events_keys[event]['sub_keys']:
+                                result = re.search(ele+'(.*)'+'\n', logs)
+                                if event not in events_results:
+                                    events_results[event] = {}
+                                events_results[event][events_keys[event]['sub_keys'][ele][1]] = result.group(1).strip()
+
+                if events_results:
+                    self.epc.handle_event(events_results)
+                    #logger.info(events_results)
+
+        logger.warning('Thread {0} stopped at {1}.'.format(self.name,self.client.base_url))
+
+    def kill(self):
+        self._kill.set()
+
+
+class EvolvedPacketCore():
+    def __init__(self,
+            host: str,
+            private_network: str,
+            public_network: str,
+        ):
+
+        # connect to the EPC host dockerhub
+        self.epc_host_name = host
+        self.docker_port = '2375'
+        logger.info('Starting LTE evolved packet core (EPC) on {0} port {1}.'.format(self.epc_host_name,self.docker_port))
+        self.client = docker.APIClient(base_url=self.epc_host_name+':'+self.docker_port)
+    
+        # create private network
+        self.docker_private_network = DockerNetwork(self.client,IPv4Network('192.168.68.0/26'),'prod-oai-private-net')
+        self.py_private_network = IPv4Network(private_network)
+        hosts_iterator = (host for host in self.py_private_network.hosts())
+        self.docker_private_bridge_ip = str(next(hosts_iterator))
+        self.private_network_reserved = {self.docker_private_bridge_ip} # the first address is the docker bridge ip
+        
+        # figure out private ips
+        self.cassandra_private_ip = str(next(hosts_iterator))
+        self.hss_private_ip = str(next(hosts_iterator))
+        # update reserved ips list
+        self.private_network_reserved.update({self.cassandra_private_ip,self.hss_private_ip})
+
+        # create public network
+        self.docker_public_network = DockerNetwork(self.client,IPv4Network('192.168.61.192/26'),'prod-oai-public-net')
+        self.py_public_network = IPv4Network(public_network)
+        hosts_iterator = (host for host in self.py_public_network.hosts())
+        self.docker_public_bridge_ip = str(next(hosts_iterator))
+        self.public_network_reserved = {self.docker_public_bridge_ip} # the first address is the docker bridge ip
+        
+        # figure out public ips
+        self.hss_public_ip = str(next(hosts_iterator))
+        self.mme_public_ip = str(next(hosts_iterator))
+        self.spgwc_public_ip = str(next(hosts_iterator))
+        self.spgwu_public_ip = str(next(hosts_iterator))
+        # update reserved ips list
+        self.public_network_reserved.update({self.hss_public_ip,self.mme_public_ip,self.spgwc_public_ip,self.spgwu_public_ip})
+
+        # prepare ue and enb lists
+        self.connected_ues = {};
+        self.connected_enbs = {};
+
+
+
+    def handle_event(self,event):
+
+        event_str = list(event.keys())[0]
+        if event_str == 'ue_attached_mme':
+            imsi = event[event_str]['imsi']
+            logger.info("MME verified a UE with IMSI {0} for attaching the EPC at {1}".format(imsi,self.client.base_url))
+
+        elif event_str == 'ue_attached_spgwc':
+            imsi = event[event_str]['imsi']
+            ip = event[event_str]['ip']
+            self.connected_ues[imsi] = { 'ip':ip }
+            logger.info("A UE with IMSI {0} attached to the EPC at {1} and got ip {2}".format(imsi,self.client.base_url,ip))
+
+            # Get the router to start configuration for this UE
+            #self.epc_router.create_tunnel()
+
+        elif event_str == 'ue_detached':
+            imsi = event[event_str]['imsi']
+            ip = event[event_str]['ip']
+            logger.warning("UE with IMSI {0} disconnected from the EPC at {1} with ip {2}".format(imsi,self.client.base_url,ip))
+            del self.connected_ues[imsi]
+            
+            # Get the router to remove this UE configuration
+
+        elif event_str == 'eNB_attached':
+            enb_id = event[event_str]['enb_id']
+            assoc_id = event[event_str]['assoc_id']
+            self.connected_enbs[assoc_id] = { 'enb_id':enb_id }
+            logger.info("Enodeb with id {0} connected to the EPC at {1} with association id {2}".format(enb_id,self.client.base_url,assoc_id))
+
+        elif event_str == 'eNB_detached':
+            assoc_id = event[event_str]['assoc_id']
+            enb_id = self.connected_enbs[assoc_id]['enb_id']
+            logger.warning("Enodeb with id {0} disconnected from the EPC at {1} with association id {2}".format(enb_id,self.client.base_url,assoc_id))
+            del self.connected_enbs[assoc_id]
+
+        
+
+    def start(self,
+        hss_config: dict,
+        mme_config: dict,
+        spgwc_config: dict,
+        spgwu_config: dict,
+    ):
+        
+        self.cassandra = Cassandra(
+            name='prod-cassandra',
+            client=self.client,
+            ip=IPv4Address(self.cassandra_private_ip),
+            network=self.docker_private_network,
+        )
+
+        self.hss = HSS(
+            name='prod-oai-hss',
+            client=self.client,
+            private_network=self.docker_private_network,
+            public_network=self.docker_public_network,
+            private_ip=IPv4Address(self.hss_private_ip),
+            public_ip=IPv4Address(self.hss_public_ip),
+            config=hss_config,
+        )
+
+        self.mme = MME(
+            name='prod-oai-legacy-mme',
+            client=self.client,
+            network=self.docker_public_network,
+            ip=self.mme_public_ip,
+            config=mme_config,
+        )
+
+        self.spgwc = SPGWC(
+            name='prod-oai-spgwc',
+            client=self.client,
+            network=self.docker_public_network,
+            ip=self.spgwc_public_ip,
+            config=spgwc_config,
+        )
+
+        self.spgwu = SPGWU(
+            name='prod-oai-spgwu-tiny',
+            client=self.client,
+            network=self.docker_public_network,
+            ip=self.spgwu_public_ip,
+            config=spgwu_config,
+        )
+
+        # start threads
+        mme_events_keys = {
+            'eNB_attached':{
+                'Adding eNB id':(-7,'enb_id'),
+                'Create eNB context':(-1,'assoc_id'),
+            },
+            'eNB_detached':{
+                'Sending close connection':(-1,'assoc_id'),
+            },
+            'ue_attached_mme': {
+                'MME_APP context for ue_id':(-2,'imsi'),
+            }
+        }
+        # start mme connection observer  
+        self.mme_checker_thread = LogsCheckerThread(
+            threadID = 1, 
+            name = "MME-logs-checker-thread", 
+            client = self.client, 
+            container = self.mme.container, 
+            line_based = True,
+            events_keys = mme_events_keys,
+            epc = self,
+        )
+        self.mme_checker_thread.start()
+
+        spgwc_events_keys = {
+            'ue_attached_spgwc':{
+                'main_key':'Sending ITTI message MODIFY_BEARER_RESPONSE',
+                'sub_keys':{
+                    'IMSI:':(1,'imsi'),
+                    'PAA IPv4:':(1,'ip'),
+                },
+            },
+            'ue_detached':{
+                'main_key':'Sending ITTI message RELEASE_ACCESS_BEARERS_RESPONSE',
+                'sub_keys':{
+                    'IMSI:':(1,'imsi'),
+                    'PAA IPv4:':(1,'ip'),
+                },
+            }
+        }
+        # start spgwc connection observer
+        self.spgwc_checker_thread = LogsCheckerThread(
+            threadID = 2,
+            name = "SPGWC-logs-checker-thread",
+            client = self.client,
+            container = self.spgwc.container,
+            line_based = False,
+            events_keys = spgwc_events_keys,
+            epc = self,
+        )
+        self.spgwc_checker_thread.start()
+
+        # initiate CoreRouter
+        self.epc_router = CoreRouter(
+            self.client,
+            '12.1.1.0/24',
+            self.spgwu_public_ip, 
+            self.docker_public_bridge_ip,
+        )
+
+    def allocate_public_ip(self):
+        hosts_iterator = (host for host in self.py_public_network.hosts() if str(host) not in self.public_network_reserved)
+        ip = str(next(hosts_iterator))
+        self.public_network_reserved.add(ip)
+        return ip
+
+    def deallocate_public_ip(self,
+            ip: str,
+            ):
+        if ip in self.public_network_reserved:
+            self.public_network_reserved.remove(ip)
+
+    def stop(self):
+        
+        self.epc_router.__del__()
+    
+        self.spgwc_checker_thread.kill()
+        self.mme_checker_thread.kill()
+        self.spgwc_checker_thread.join()
+        self.mme_checker_thread.join()
+
+
+        self.spgwu.__del__()
+        self.spgwc.__del__()
+        self.mme.__del__()
+        self.hss.__del__()
+        self.cassandra.__del__()
+
+    def __del__(self):
+
+        self.docker_private_network.__del__()
+        self.docker_public_network.__del__()
+
 if __name__ == "__main__":
 
     # connect to the EPC host dockerhub
@@ -424,6 +713,8 @@ if __name__ == "__main__":
         ip=mme_public_ip,
         config=mme_config,
     )
+
+    
 
     spgwc_config = {
         'TZ': 'Europe/Paris',

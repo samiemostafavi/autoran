@@ -2,15 +2,27 @@ import docker
 import time
 from loguru import logger
 from lib.utils import DockerNetwork, DockerService
+from ipaddress import IPv4Interface, IPv4Network, IPv4Address 
+import re
+import json
+from .LTEUERouter import UERouter
+
+def is_json(myjson):
+    try:
+        json.loads(myjson)
+    except ValueError as e:
+        return False
+    return True
 
 class LTEUE(DockerService):
+    assigned_ip: IPv4Interface
 
     def __init__(self,
             name: str,
             client: docker.APIClient,
             config: dict,
     ):
-
+        self.assigned_ip = None
         self.name = name
         self.client = client
 
@@ -28,20 +40,128 @@ class LTEUE(DockerService):
                 #    '{0}:/opt/oai-lte-ue/entrypoint.sh'.format(entry_file),
                 #],
             ),
+            healthcheck=docker.types.Healthcheck(
+                test="/bin/bash -c \" ping -c1 12.1.1.1 &>/dev/null; \"",
+                interval=1*1000000000,
+                timeout=1*1000000000,
+                retries=0,
+            ),
             environment=config,
             entrypoint='/usr/bin/env',
             #command="/bin/bash -c  \" ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && ./bin/usim -g -c /opt/oai-lte-ue/ue_usim.conf && ./bin/nvram -g -c /opt/oai-lte-ue/ue_usim.conf  && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C 2680000000 -r 25 --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0 --ue-scan-carrier --nokrnmod 1; \" "
-            command="/bin/bash -c  \" chmod +x /opt/oai-lte-ue/entrypoint.sh && /opt/oai-lte-ue/entrypoint.sh  && ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && ./bin/usim -g -c /opt/oai-lte-ue/ue_usim.conf && ./bin/nvram -g -c /opt/oai-lte-ue/ue_usim.conf  && exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 -C {0}000000 -r {1} --ue-rxgain {2} --ue-txgain {3} --ue-max-power {4} --ue-scan-carrier --nokrnmod 1; \" ".format(config['DL_FREQUENCY_IN_MHZ'],config['NB_PRB'],config['RX_GAIN'],config['TX_GAIN'],config['MAX_POWER'])
+            command="/bin/bash -c  \" chmod +x /opt/oai-lte-ue/entrypoint.sh && " +
+                                      " /opt/oai-lte-ue/entrypoint.sh  && " +
+                                      " ./bin/uhd_images_downloader.py -t b2xx_b210_fpga_default && " +
+                                      " ./bin/uhd_images_downloader.py -t b2xx_common_fw_default && " +
+                                      " ./bin/usim -g -c /opt/oai-lte-ue/ue_usim.conf && " +
+                                      " ./bin/nvram -g -c /opt/oai-lte-ue/ue_usim.conf && " +
+                                      " exec /opt/oai-lte-ue/bin/lte-uesoftmodem.Rel15 " +
+                                      " -C {0}000000 ".format(config['DL_FREQUENCY_IN_MHZ']) +
+                                      " -r {0} ".format(config['NB_PRB']) + 
+                                      " --ue-rxgain {0} ".format(config['RX_GAIN']) +
+                                      " --ue-txgain {0} ".format(config['TX_GAIN']) +
+                                      " --ue-max-power {0} ".format(config['MAX_POWER']) +
+                                      " --ue-scan-carrier --nokrnmod 1; \" "
         )
 
         # start the container
         client.start(self.container)
         logger.info('{0} service successfully started at {1}.'.format(self.name,self.client.base_url))
         
-        #dkg = client.attach(container, stdout=True, stderr=True, stream=True, logs=True, demux=False)
-        #for line in dkg:
-        #    line = line.decode().rstrip()
-        #    print(line)
+        
+        manager_container = client.create_container(
+            image='oai-lte-ue:latest',
+            name='prod-lte-ue-manager',
+            hostname='ubuntu',
+            host_config=client.create_host_config(
+                network_mode='host',
+                privileged=True,
+                restart_policy={
+                    'Name':'always',
+                },
+            ),
+            entrypoint="/bin/bash -c \"sleep 1 && ip -j --brief address show oaitun_ue1 \" ",
+        )
+        
+        # start the container
+        client.start(manager_container)
+        logger.info('Waiting for UE at {0} to connect...'.format(self.name,self.client.base_url))
+        
+        succeeded = False
+        complete_logs = ''
+        for i in range(0,30):
+            time.sleep(1)
+            new_complete_logs = client.logs(manager_container,stdout=True, stderr=True, tail='all').decode()
+            logs = new_complete_logs.replace(complete_logs,'',1)
+            complete_logs = new_complete_logs
+
+            if logs:              
+                #print(logs)
+                if is_json(logs):
+                    try:
+                        res_ip = json.loads(logs)[11]['addr_info'][0]['local']
+                        res_preflen = json.loads(logs)[11]['addr_info'][0]['prefixlen']
+                        succeeded = True
+                    except:
+                        pass
+
+            if succeeded:
+                break
+
+        if not succeeded:
+            logger.error("UE connection timeout.")
+
+            try:
+                client.kill(manager_container)
+            except:
+                pass
+
+            try:
+                client.remove_container(manager_container)
+            except:
+                pass
+
+            logger.warning('UE connection checker container tore down and removed.')
+
+            raise Exception("UE connection timeout.")
+
+        try:
+            client.kill(manager_container)
+        except:
+            pass
+
+        try:
+            client.remove_container(manager_container)
+        except:
+            pass
+
+        logger.warning('UE connection checker container tore down and removed.')
+    
+        self.assigned_ip = IPv4Interface(str(res_ip)+'/'+str(res_preflen))
+
+        logger.info('UE at {0} is attached and connected with ip {1}.'.format(self.client.base_url,self.assigned_ip))
+
+        # initiate CoreRouter
+        self.ue_router = UERouter(
+            self.client,
+            '192.168.61.192/26',
+            '12.1.1.1',
+            '192.168.61.193',
+        )
+
+
+    def is_connected(self) -> bool:
+
+        result = self.client.inspect_container(self.name)['State']['Health']['Status']
+        if result == 'healthy':
+            return True
+        else:
+            return False
+
+    def __del__(self):
+        self.ue_router.__del__()
+        super().__del__()
+
 
 if __name__ == "__main__":
 
@@ -74,8 +194,9 @@ if __name__ == "__main__":
         client=client, 
         config=ue_config,
     )
-    
-    input("Press any key to continue...")
+   
 
+    input("Press any key to continue...")
+    
     lteue.__del__()
 

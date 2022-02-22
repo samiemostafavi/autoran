@@ -31,11 +31,14 @@ if __name__ == "__main__":
         'TX_GAIN':0,
         'MAX_POWER':0,
     }
+
     lteue = LTEUE(
         name='prod-oai-lte-ue',
         client=client, 
         config=ue_config,
     )
+
+
     
     input("Press any key to stop...")
 
