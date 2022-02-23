@@ -6,7 +6,7 @@ from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
 
 from autoran.utils import DockerNetwork, DockerService
-from autoran.lte_py.enodeb import ENodeB
+from autoran.oailte.enodeb import ENodeB
 
 if __name__ == "__main__":
 

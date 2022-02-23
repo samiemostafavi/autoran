@@ -5,7 +5,7 @@ from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
 
-from autoran.lte_py.epc import *
+from autoran.oailte.epc import *
 from autoran.utils import *
 
 if __name__ == "__main__":
