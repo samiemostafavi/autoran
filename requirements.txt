@@ -1,0 +1,8 @@
+pip
+jsonschema<4
+docker
+loguru
+frozendict
+dataclasses-json
+docker-compose
+netaddr
