@@ -6,6 +6,7 @@ from ipaddress import IPv4Interface, IPv4Network, IPv4Address
 import re
 import json
 from .LTEUERouter import UERouter
+from lib.utils.command_runner import RemoteRunner
 
 def is_json(myjson):
     try:
@@ -21,10 +22,12 @@ class LTEUE(DockerService):
             name: str,
             client: docker.APIClient,
             config: dict,
+            routing_config: dict,
     ):
         self.assigned_ip = None
         self.name = name
         self.client = client
+        self.routing_config = routing_config
 
         self.container = client.create_container(
             #image='rdefosseoai/oai-lte-ue:develop',
@@ -99,8 +102,10 @@ class LTEUE(DockerService):
                 #print(logs)
                 if is_json(logs):
                     try:
-                        res_ip = json.loads(logs)[11]['addr_info'][0]['local']
-                        res_preflen = json.loads(logs)[11]['addr_info'][0]['prefixlen']
+                        js_dict = json.loads(logs)
+                        js_dict = list(filter(None, js_dict))
+                        res_ip = js_dict[0]['addr_info'][0]['local']
+                        res_preflen = js_dict[0]['addr_info'][0]['prefixlen']
                         succeeded = True
                     except:
                         pass
@@ -141,13 +146,41 @@ class LTEUE(DockerService):
 
         logger.info('UE at {0} is attached and connected with ip {1}.'.format(self.client.base_url,self.assigned_ip))
 
+        self.rr = RemoteRunner(
+            client=self.client,
+            name='prod-remoterunner',
+        )
+
         # initiate CoreRouter
         self.ue_router = UERouter(
-            self.client,
-            '192.168.61.192/26',
-            '12.1.1.1',
-            '192.168.61.193',
+            client=self.client,
+            docker_public_network='192.168.61.192/26',
+            epc_main_lte_ip='12.1.1.1',
+            epc_bridge_ip='192.168.61.193',
+            lte_assigned_ip=str(self.assigned_ip.ip),
+            remote_runner=self.rr,
+            routing_config=self.routing_config,
         )
+
+
+        logger.info("Waiting for UE at {0} to handshake over the tunnel with EPC...".format(self.client.base_url))
+        tunnel_handshake = self.ue_router.wait_for_tunnel(
+            tunnel_epc_ip=str(self.routing_config['epc_tun_if'].ip),
+        )
+        if not tunnel_handshake:
+            logger.error("UE at {0} could not handshake over the tunnel with EPC.".format(self.client.base_url))
+        else:
+            logger.info("UE at {0} successfully tested gre tunnel with EPC.".format(self.client.base_url))
+            
+            # Expose UE external network
+            self.ue_router.create_tunnel_route(
+                target_net=str(self.routing_config['epc_ex_net']),
+                epc_tunnel_ip=str(self.routing_config['epc_tun_if'].ip),
+            )
+
+            logger.info("UE at {0} successfully added a route from {1} to EPC external network {2}.".format(self.client.base_url,'tun0',str(self.routing_config['epc_ex_net'])))
+        
+            self.ue_router.enable_iptables_forwarding()
 
 
     def is_connected(self) -> bool:
@@ -159,7 +192,13 @@ class LTEUE(DockerService):
             return False
 
     def __del__(self):
-        self.ue_router.__del__()
+        try:
+            self.ue_router
+        except:
+            pass
+        else:
+            self.ue_router.__del__()
+
         super().__del__()
 
 

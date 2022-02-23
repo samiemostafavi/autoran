@@ -6,6 +6,7 @@ from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
 from lib.utils import DockerNetwork, DockerService
+from lib.utils.command_runner import RemoteRunner
 from .EPCRouter import CoreRouter
 import threading
 import time
@@ -430,6 +431,11 @@ class EvolvedPacketCore():
         self.connected_ues = {};
         self.connected_enbs = {};
 
+        # prepare the remote runner
+        self.rr = RemoteRunner(
+            client=self.client,
+            name='prod-remoterunner',
+        )
 
 
     def handle_event(self,event):
@@ -442,20 +448,59 @@ class EvolvedPacketCore():
         elif event_str == 'ue_attached_spgwc':
             imsi = event[event_str]['imsi']
             ip = event[event_str]['ip']
-            self.connected_ues[imsi] = { 'ip':ip }
-            logger.info("A UE with IMSI {0} attached to the EPC at {1} and got ip {2}".format(imsi,self.client.base_url,ip))
 
-            # Get the router to start configuration for this UE
-            #self.epc_router.create_tunnel()
+            if imsi in self.connected_ues.keys():
+                logger.info("A UE with IMSI {0} attached to the EPC at {1} and got ip {2} again, no routing.".format(imsi,self.client.base_url,ip))
+            else:
+
+                # Get the router to start GRE tunnel
+                tunnel_name = self.epc_router.create_tunnel(
+                    remote_ip=ip,
+                    local_ip=self.docker_public_bridge_ip,
+                    tunnel_epc_if=str(self.routing_config[imsi]['epc_tun_if']),
+                )
+                
+                self.connected_ues[imsi] = { 'ip':ip, 'tunnel':tunnel_name }
+                logger.info("A UE with IMSI {0} attached to the EPC at {1} and got ip {2}".format(imsi,self.client.base_url,ip))
+                
+                logger.info("Waiting for EPC {0} tunnel handshake with UE {1}...".format(self.client.base_url,imsi))
+                tunnel_handshake = self.epc_router.wait_for_tunnel(
+                    tunnel_ue_ip=str(self.routing_config[imsi]['ue_tun_if'].ip),
+                )
+                if not tunnel_handshake:
+                    logger.error("EPC at {0} could not handshake over the tunnel with UE with imsi {1}.".format(self.client.base_url,imsi))
+                else:
+                    logger.info("EPC at {0} successfully tested gre tunnel with UE with imsi {1}.".format(self.client.base_url,imsi))
+
+                    # Expose UE external network
+                    self.epc_router.create_tunnel_route(
+                        tunnel_name=tunnel_name,
+                        target_net=str(self.routing_config[imsi]['ue_ex_net']),
+                        ue_tunnel_ip=str(self.routing_config[imsi]['ue_tun_if'].ip),
+                    )
+                    
+                    logger.info("EPC at {0} successfully added a route from {1} to UE {2} external network {3}.".format(self.client.base_url,tunnel_name,imsi,str(self.routing_config[imsi]['ue_ex_net'])))
+
 
         elif event_str == 'ue_detached':
             imsi = event[event_str]['imsi']
             ip = event[event_str]['ip']
             logger.warning("UE with IMSI {0} disconnected from the EPC at {1} with ip {2}".format(imsi,self.client.base_url,ip))
+
+            # Delete tunnel route
+            self.epc_router.remove_tunnel_route(
+                target_net=str(self.routing_config[imsi]['ue_ex_net']),
+            )
+
+            # Get the router to delete GRE tunnel
+            tunnel_name = self.connected_ues[imsi]['tunnel']
+            self.epc_router.remove_tunnel(
+                name=tunnel_name,
+            )
+            
+            # delete ue from the list
             del self.connected_ues[imsi]
             
-            # Get the router to remove this UE configuration
-
         elif event_str == 'eNB_attached':
             enb_id = event[event_str]['enb_id']
             assoc_id = event[event_str]['assoc_id']
@@ -475,6 +520,7 @@ class EvolvedPacketCore():
         mme_config: dict,
         spgwc_config: dict,
         spgwu_config: dict,
+        routing_config: dict,
     ):
         
         self.cassandra = Cassandra(
@@ -516,6 +562,18 @@ class EvolvedPacketCore():
             network=self.docker_public_network,
             ip=self.spgwu_public_ip,
             config=spgwu_config,
+        )
+       
+        self.routing_config = routing_config
+
+        # initiate CoreRouter
+        self.epc_router = CoreRouter(
+            client=self.client,
+            ue_network='12.1.1.0/24',
+            spgwu_public_ip=self.spgwu_public_ip, 
+            public_bridge_ip=self.docker_public_bridge_ip,
+            remote_runner=self.rr,
+            routing_config=routing_config,
         )
 
         # start threads
@@ -571,13 +629,6 @@ class EvolvedPacketCore():
         )
         self.spgwc_checker_thread.start()
 
-        # initiate CoreRouter
-        self.epc_router = CoreRouter(
-            self.client,
-            '12.1.1.0/24',
-            self.spgwu_public_ip, 
-            self.docker_public_bridge_ip,
-        )
 
     def allocate_public_ip(self):
         hosts_iterator = (host for host in self.py_public_network.hosts() if str(host) not in self.public_network_reserved)

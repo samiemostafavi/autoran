@@ -4,6 +4,7 @@ from loguru import logger
 
 from lib.utils import DockerNetwork, DockerService
 from lib.lte_py.ue import LTEUE
+from ipaddress import IPv4Interface, IPv4Network, IPv4Address 
 
 if __name__ == "__main__":
 
@@ -32,10 +33,18 @@ if __name__ == "__main__":
         'MAX_POWER':0,
     }
 
+    routing_config = {
+        'epc_tun_if' : IPv4Interface('172.17.0.1/24'),
+        'ue_tun_if' : IPv4Interface('172.17.0.2/24'),
+        'epc_ex_net' : IPv4Network('10.0.0.0/24'),
+        'ue_ex_net_if': 'enp4s0',
+    }
+
     lteue = LTEUE(
         name='prod-oai-lte-ue',
         client=client, 
         config=ue_config,
+        routing_config=routing_config,
     )
 
 
