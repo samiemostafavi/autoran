@@ -1,12 +1,13 @@
 import docker
 import time
 from loguru import logger
-from lib.utils import DockerNetwork, DockerService
 from ipaddress import IPv4Interface, IPv4Network, IPv4Address 
 import re
 import json
+
 from .LTEUERouter import UERouter
-from lib.utils.command_runner import RemoteRunner
+from autoran.utils import DockerNetwork, DockerService
+from autoran.utils.command_runner import RemoteRunner
 
 def is_json(myjson):
     try:

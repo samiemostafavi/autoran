@@ -5,11 +5,12 @@ import re
 from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
-from lib.utils import DockerNetwork, DockerService
-from lib.utils.command_runner import RemoteRunner
-from .EPCRouter import CoreRouter
 import threading
 import time
+
+from autoran.utils import DockerNetwork, DockerService
+from autoran.utils.command_runner import RemoteRunner
+from .EPCRouter import CoreRouter
 
 
 # EPC Cassandra Database Service

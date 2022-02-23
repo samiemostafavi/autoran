@@ -2,8 +2,8 @@ import docker
 import time
 from loguru import logger
 
-from lib.utils import DockerNetwork, DockerService
-from lib.lte_py.ue import LTEUE
+from autoran.utils import DockerNetwork, DockerService
+from autoran.lte_py.ue import LTEUE
 from ipaddress import IPv4Interface, IPv4Network, IPv4Address 
 
 if __name__ == "__main__":

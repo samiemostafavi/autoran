@@ -5,8 +5,8 @@ from loguru import logger
 from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
 
-from lib.lte_py.epc import *
-from lib.utils import *
+from autoran.lte_py.epc import *
+from autoran.utils import *
 
 if __name__ == "__main__":
 

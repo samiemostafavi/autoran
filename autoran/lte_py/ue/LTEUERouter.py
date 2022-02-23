@@ -8,7 +8,7 @@ from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
 import time
 
-from lib.utils.command_runner import RemoteRunner, terminate_container
+from autoran.utils.command_runner import RemoteRunner, terminate_container
 
 class UERouter():
     def __init__(self,
