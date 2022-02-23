@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 README = (HERE / "README.md").read_text()
@@ -12,6 +12,6 @@ setup(
   author="Seyed Samie Mostafavi",
   author_email="samiemostafavi@gmail.com",
   license="MIT",
-  packages=["autoran"],
+  packages=find_packages(),
   zip_safe=False
 )
