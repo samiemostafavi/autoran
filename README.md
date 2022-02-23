@@ -1,3 +1,10 @@
+# AutoRAN: Automatic remote deployment of open-source radio access networks using Python
+
+Use the repo in your project by installing it using pip:
+
+    pip install git+https://github.com/samiemostafavi/autoran.git
+
+
 # OAI All-in-Docker
 
 In this section, I provide the missing docker-compose files, configurations, and explanations required for running an end-to-end Openairinterface (OAI) LTE or 5G standalone network. Therefore, we use software-defined radios only and all user equipment (UE) instances are OAI-based e.g. `lte-ue` or `nr-ue`.
