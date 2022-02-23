@@ -1,6 +1,6 @@
-# AutoRAN: Automatic remote deployment of open-source radio access networks using Python
+# AutoRAN: Automatic remote deployment of open-source radio access networks
 
-Use the repo in your project by installing it using pip:
+Using this library you can start an end-to-end radio network only with Python on any remote device! Under the hood, we use Radio network Docker images provided by openairinterface, srs, o-ran, and etc.
 
     pip install git+https://github.com/samiemostafavi/autoran.git
 
