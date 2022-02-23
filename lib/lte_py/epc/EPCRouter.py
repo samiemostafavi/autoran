@@ -40,7 +40,7 @@ class CoreRouter():
     def wait_for_tunnel(self,
         tunnel_ue_ip: str,
     ):
-        return self.rr.run_command(command="ping -c15 {0}".format(tunnel_ue_ip),timeout=20)
+        return self.rr.run_command(command="ping -c7 {0}".format(tunnel_ue_ip),timeout=10)
 
     def create_tunnel_route(self,
         tunnel_name: str,
