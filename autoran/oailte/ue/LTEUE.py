@@ -21,14 +21,19 @@ class LTEUE(DockerService):
 
     def __init__(self,
             name: str,
-            client: docker.APIClient,
+            host: str, 
             config: dict,
             routing_config: dict,
     ):
         self.assigned_ip = None
         self.name = name
-        self.client = client
+        self.host = host
         self.routing_config = routing_config
+
+        docker_port = '2375'
+        logger.info('Starting LTE UE on {0}'.format(host))
+        client = docker.APIClient(base_url=host+':'+docker_port)
+        self.client = client
 
         self.container = client.create_container(
             #image='rdefosseoai/oai-lte-ue:develop',
@@ -207,9 +212,6 @@ if __name__ == "__main__":
 
     # connect to the EPC host dockerhub
     docker_host_name = 'fingolfin'
-    docker_port = '2375'
-    logger.info('Starting LTE UE on {0} port {1}.'.format(docker_host_name,docker_port))
-    client = docker.APIClient(base_url=docker_host_name+':'+docker_port)
 
     # create and run ue container
     ue_config = {
@@ -229,12 +231,15 @@ if __name__ == "__main__":
         'TX_GAIN':0,
         'MAX_POWER':0,
     }
+
     lteue = LTEUE(
         name='prod-oai-lte-ue',
-        client=client, 
+        host=docker_host_name,
         config=ue_config,
+        routing_config=routing_config,
     )
-   
+
+
 
     input("Press any key to continue...")
     

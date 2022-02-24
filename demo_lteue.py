@@ -10,9 +10,6 @@ if __name__ == "__main__":
 
     # connect to the EPC host dockerhub
     docker_host_name = 'fingolfin'
-    docker_port = '2375'
-    logger.info('Starting LTE UE on {0} port {1}.'.format(docker_host_name,docker_port))
-    client = docker.APIClient(base_url=docker_host_name+':'+docker_port)
 
     # create and run ue container
     ue_config = {
@@ -42,7 +39,7 @@ if __name__ == "__main__":
 
     lteue = LTEUE(
         name='prod-oai-lte-ue',
-        client=client, 
+        host=docker_host_name, 
         config=ue_config,
         routing_config=routing_config,
     )
