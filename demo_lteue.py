@@ -31,9 +31,9 @@ if __name__ == "__main__":
     }
 
     routing_config = {
-        'epc_tun_if' : IPv4Interface('172.17.0.1/24'),
-        'ue_tun_if' : IPv4Interface('172.17.0.2/24'),
-        'epc_ex_net' : IPv4Network('10.0.0.0/24'),
+        'epc_tun_if' : IPv4Interface('192.17.0.1/24'),
+        'ue_tun_if' : IPv4Interface('192.17.0.2/24'),
+        'epc_ex_net' : IPv4Network('10.4.0.0/24'),
         'ue_ex_net_if': 'enp4s0',
     }
 

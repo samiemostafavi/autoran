@@ -8,7 +8,7 @@ from dataclasses_json import config, dataclass_json
 from dataclasses import dataclass, field
 import time
 
-from autoran.utils.command_runner import RemoteRunner
+from autoran.utils.command_runner import RemoteRunner, terminate_container
 
 class CoreRouter():
     def __init__(self,
@@ -36,6 +36,100 @@ class CoreRouter():
         self.successful_commands.append('init_routing')
 
         self.tunnel_counter = 0
+
+    def iptables_command(self,command_str):
+
+
+        container = self.client.create_container(
+            image='router_admin:latest',
+            name='iptables_saver',
+            hostname='ubuntu',
+            volumes=['/tmp/'],
+            host_config=self.client.create_host_config(
+                network_mode='host',
+                privileged=True,
+                binds=[
+                    '/tmp/:/tmp/',
+                ],
+            ),
+            command="/bin/bash -c  \" " + command_str + " && echo 'OK' \" "
+        )
+
+        # start the container
+        self.client.start(container)
+
+        success = False
+        for i in range(1,10):
+            time.sleep(0.1)
+            logs = self.client.logs(container,stdout=True, stderr=True, tail='all')
+            logs = logs.decode().rstrip()
+            #print(logs)
+            if "OK" in logs:
+                success = True
+                break
+        if not success:
+            logger.error('Running the command: \" ' + command_str + " \" did not work on {0}".format(self.client.base_url))
+            terminate_container(self.client,container)
+            return False
+            #raise Exception('Running the routing command: \" ' + command + " \" did not work on {0}".format(client.base_url))
+
+        terminate_container(self.client,container)
+        return True
+
+
+    def enable_iptables_forwarding(self, 
+        tunnel_name: str,
+    ):
+
+        # this command only works for 1 ue connection
+
+        self.mutex.acquire()
+
+        # do not run a command multiple times
+        if "iptables" in self.successful_commands:
+            return
+
+        command_str = "iptables-save > /tmp/dsl.fw"
+        if self.iptables_command(command_str):
+            logger.info('Iptables at EPC {0} is saved to {1}.'.format(self.client.base_url,'/tmp/dsl.fw'))
+        else:
+            return
+
+
+        ext_if = self.routing_config['epc_ex_net_if']
+        tun_if = tunnel_name
+
+        command = ("iptables -t nat -A POSTROUTING -o {0} -j MASQUERADE && ".format(ext_if)
+                + "iptables -A FORWARD -i {0} -o {1} -m state --state RELATED,ESTABLISHED -j ACCEPT && ".format(ext_if,tun_if)
+                + "iptables -A FORWARD -i {0} -o {1} -j ACCEPT && ".format(tun_if,ext_if)
+                + "iptables -t nat -A POSTROUTING -o {0} -j MASQUERADE && ".format(tun_if)
+                + "iptables -A FORWARD -i {0} -o {1} -m state --state RELATED,ESTABLISHED -j ACCEPT && ".format(tun_if,ext_if)
+                + "iptables -A FORWARD -i {0} -o {1} -j ACCEPT".format(ext_if,tun_if) )
+
+        #print(command)
+
+        self.rr.run_command(command)
+        logger.info('EPC router at {0} enabled ip MASQUERADE between interfaces {1} and {2}.'.format(self.client.base_url,tun_if,ext_if))
+        self.successful_commands.append("iptables")
+
+        self.mutex.release()
+
+
+    def restore_iptables(self):
+        self.mutex.acquire()
+
+        ext_if = self.routing_config['epc_ex_net_if']
+
+        if "iptables" in self.successful_commands:
+
+            command_str = "iptables-restore < /tmp/dsl.fw"
+            self.iptables_command(command_str)
+
+            self.successful_commands.remove("iptables")
+            logger.warning('EPC router at {0} restored iptables.'.format(self.client.base_url))
+
+        self.mutex.release()
+
 
     def wait_for_tunnel(self,
         tunnel_ue_ip: str,
@@ -104,6 +198,10 @@ class CoreRouter():
         self.mutex.release()
 
     def __del__(self):
+
+        # clean the iptables
+        if "iptables" in self.successful_commands:
+            self.restore_iptables()    
 
         # clean the ext_routes
         for command in self.successful_commands:

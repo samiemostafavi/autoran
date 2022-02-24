@@ -482,6 +482,8 @@ class EvolvedPacketCore():
                     
                     logger.info("EPC at {0} successfully added a route from {1} to UE {2} external network {3}.".format(self.client.base_url,tunnel_name,imsi,str(self.routing_config[imsi]['ue_ex_net'])))
 
+                    self.epc_router.enable_iptables_forwarding(tunnel_name)
+
 
         elif event_str == 'ue_detached':
             imsi = event[event_str]['imsi']

@@ -124,10 +124,11 @@ if __name__ == "__main__":
     # create routing config
     routing_config = {
         '208960010000001':{
-            'epc_tun_if' : IPv4Interface('172.17.0.1/24'),
-            'ue_tun_if' : IPv4Interface('172.17.0.2/24'),
-            'ue_ex_net' : IPv4Network('10.0.1.0/24'),
+            'epc_tun_if' : IPv4Interface('192.17.0.1/24'),
+            'ue_tun_if' : IPv4Interface('192.17.0.2/24'),
+            'ue_ex_net' : IPv4Network('10.5.0.0/24'),
         },
+        'epc_ex_net_if' : 'enp5s0',
     }
 
     epc.start(hss_config,mme_config,spgwc_config,spgwu_config, routing_config)
