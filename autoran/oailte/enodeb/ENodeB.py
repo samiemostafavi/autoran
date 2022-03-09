@@ -7,30 +7,39 @@ from autoran.utils import DockerNetwork, DockerService
 class ENodeB(DockerService):
     def __init__(self,
         name: str,
-        client: docker.APIClient,
-        ip: IPv4Address,
+        host: str,
         network: DockerNetwork,
-        config: dict,
     ):
 
-        self.client = client
         self.name = name
-        self.ip = ip
+        self.ip = network.allocate_ip()
         self.network = network
 
+        # connect to the ENodeB host dockerhub
+        self.enb_host_name = host
+        self.docker_port = '2375'
+        self.client = docker.APIClient(base_url=self.enb_host_name+':'+self.docker_port)
+    
+
+    def start(self,
+        config: dict,
+    ):
+        
+        logger.info('Starting LTE eNodeB on {0} port {1}.'.format(self.enb_host_name,self.docker_port))
+
         # First, check if enb can reach SPGWC and MME
-        networking_config = client.create_networking_config({
-            network.name: client.create_endpoint_config(
-                ipv4_address=str(ip),
+        networking_config = self.client.create_networking_config({
+            self.network.name: self.client.create_endpoint_config(
+                ipv4_address=str(self.ip),
             ),
         })
 
-        conn_check_container = client.create_container(
+        conn_check_container = self.client.create_container(
             #image='rdefosseoai/oai-enb:develop',
             image='oai-enb:latest',
             name='check-enb-connections',
             hostname='ubuntu',
-            host_config=client.create_host_config(privileged=True),
+            host_config=self.client.create_host_config(privileged=True),
             networking_config=networking_config,
             entrypoint='/usr/bin/env',
             command= "/bin/bash -c  \"ping -c 3 {0} && ping -c 3 {1};\" ".format(config['mme_ip'],config['spgwc_ip']),
@@ -39,9 +48,9 @@ class ENodeB(DockerService):
         logger.info('Checking eNodeB connection to SPGWC and MME services...')
 
         # start the container
-        client.start(conn_check_container)
+        self.client.start(conn_check_container)
 
-        dkg = client.attach(conn_check_container, stdout=True, stderr=True, stream=True, logs=True, demux=False)
+        dkg = self.client.attach(conn_check_container, stdout=True, stderr=True, stream=True, logs=True, demux=False)
         for line in dkg:
             line = line.decode().rstrip().partition('\n')[0]
             #print(line)
@@ -53,12 +62,12 @@ class ENodeB(DockerService):
                 logger.info(line)
 
         try:
-            client.kill(conn_check_container)
+            self.client.kill(conn_check_container)
         except:
             pass
 
         try:
-            client.remove_container(conn_check_container)
+            self.client.remove_container(conn_check_container)
         except:
             pass
 
@@ -66,17 +75,17 @@ class ENodeB(DockerService):
 
 
         # now start the real enodeB container
-        networking_config = client.create_networking_config({
-            network.name: client.create_endpoint_config(
-                ipv4_address=str(ip),
+        networking_config = self.client.create_networking_config({
+            self.network.name: self.client.create_endpoint_config(
+                ipv4_address=str(self.ip),
             ),
         })
 
-        self.container = client.create_container(
+        self.container = self.client.create_container(
             image='oai-enb:latest',
-            name=name,
+            name=self.name,
             hostname='ubuntu',
-            host_config=client.create_host_config(
+            host_config=self.client.create_host_config(
                 privileged=True,
             ),
             networking_config=networking_config,
@@ -87,8 +96,8 @@ class ENodeB(DockerService):
         )
 
         # start the container
-        client.start(self.container)
-        logger.info('{0} service successfully started at {1} with ip {2}.'.format(self.name,self.client.base_url,ip))
+        self.client.start(self.container)
+        logger.info('{0} service successfully started at {1} with ip {2}.'.format(self.name,self.client.base_url,self.ip))
 
 if __name__ == "__main__":
 

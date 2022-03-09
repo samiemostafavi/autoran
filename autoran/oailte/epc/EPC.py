@@ -390,8 +390,8 @@ class LogsCheckerThread (threading.Thread):
 class EvolvedPacketCore():
     def __init__(self,
             host: str,
-            private_network: str,
-            public_network: str,
+            private_network: DockerNetwork,
+            public_network: DockerNetwork,
         ):
 
         # connect to the EPC host dockerhub
@@ -400,33 +400,17 @@ class EvolvedPacketCore():
         logger.info('Starting LTE evolved packet core (EPC) on {0} port {1}.'.format(self.epc_host_name,self.docker_port))
         self.client = docker.APIClient(base_url=self.epc_host_name+':'+self.docker_port)
     
-        # create private network
-        self.docker_private_network = DockerNetwork(self.client,IPv4Network('192.168.68.0/26'),'prod-oai-private-net')
-        self.py_private_network = IPv4Network(private_network)
-        hosts_iterator = (host for host in self.py_private_network.hosts())
-        self.docker_private_bridge_ip = str(next(hosts_iterator))
-        self.private_network_reserved = {self.docker_private_bridge_ip} # the first address is the docker bridge ip
-        
+        self.docker_private_network = private_network
         # figure out private ips
-        self.cassandra_private_ip = str(next(hosts_iterator))
-        self.hss_private_ip = str(next(hosts_iterator))
-        # update reserved ips list
-        self.private_network_reserved.update({self.cassandra_private_ip,self.hss_private_ip})
+        self.cassandra_private_ip = private_network.allocate_ip()
+        self.hss_private_ip = private_network.allocate_ip()
 
-        # create public network
-        self.docker_public_network = DockerNetwork(self.client,IPv4Network('192.168.61.192/26'),'prod-oai-public-net')
-        self.py_public_network = IPv4Network(public_network)
-        hosts_iterator = (host for host in self.py_public_network.hosts())
-        self.docker_public_bridge_ip = str(next(hosts_iterator))
-        self.public_network_reserved = {self.docker_public_bridge_ip} # the first address is the docker bridge ip
-        
+        self.docker_public_network = public_network
         # figure out public ips
-        self.hss_public_ip = str(next(hosts_iterator))
-        self.mme_public_ip = str(next(hosts_iterator))
-        self.spgwc_public_ip = str(next(hosts_iterator))
-        self.spgwu_public_ip = str(next(hosts_iterator))
-        # update reserved ips list
-        self.public_network_reserved.update({self.hss_public_ip,self.mme_public_ip,self.spgwc_public_ip,self.spgwu_public_ip})
+        self.hss_public_ip = public_network.allocate_ip()
+        self.mme_public_ip = public_network.allocate_ip()
+        self.spgwc_public_ip = public_network.allocate_ip()
+        self.spgwu_public_ip = public_network.allocate_ip()
 
         # prepare ue and enb lists
         self.connected_ues = {};
@@ -437,6 +421,14 @@ class EvolvedPacketCore():
             client=self.client,
             name='prod-remoterunner',
         )
+
+        self.epc_router = None
+        self.threads_running = False
+        self.spgwu = None
+        self.spgwc = None
+        self.mme = None
+        self.hss = None
+        self.cassandra = None
 
 
     def handle_event(self,event):
@@ -457,7 +449,7 @@ class EvolvedPacketCore():
                 # Get the router to start GRE tunnel
                 tunnel_name = self.epc_router.create_tunnel(
                     remote_ip=ip,
-                    local_ip=self.docker_public_bridge_ip,
+                    local_ip=self.docker_public_network.docker_bridge_ip,
                     tunnel_epc_if=str(self.routing_config[imsi]['epc_tun_if']),
                 )
                 
@@ -574,7 +566,7 @@ class EvolvedPacketCore():
             client=self.client,
             ue_network='12.1.1.0/24',
             spgwu_public_ip=self.spgwu_public_ip, 
-            public_bridge_ip=self.docker_public_bridge_ip,
+            public_bridge_ip=self.docker_public_network.docker_bridge_ip,
             remote_runner=self.rr,
             routing_config=routing_config,
         )
@@ -631,40 +623,38 @@ class EvolvedPacketCore():
             epc = self,
         )
         self.spgwc_checker_thread.start()
-
-
-    def allocate_public_ip(self):
-        hosts_iterator = (host for host in self.py_public_network.hosts() if str(host) not in self.public_network_reserved)
-        ip = str(next(hosts_iterator))
-        self.public_network_reserved.add(ip)
-        return ip
-
-    def deallocate_public_ip(self,
-            ip: str,
-            ):
-        if ip in self.public_network_reserved:
-            self.public_network_reserved.remove(ip)
+        
+        self.threads_running = True
 
     def stop(self):
+
+        if self.epc_router:
+            self.epc_router.__del__()
         
-        self.epc_router.__del__()
-    
-        self.spgwc_checker_thread.kill()
-        self.mme_checker_thread.kill()
-        self.spgwc_checker_thread.join()
-        self.mme_checker_thread.join()
+        if self.threads_running:
+            self.spgwc_checker_thread.kill()
+            self.mme_checker_thread.kill()
+            self.spgwc_checker_thread.join()
+            self.mme_checker_thread.join()
+            self.threads_running = False
+        
+        if self.spgwu:
+            self.spgwu.__del__()
 
+        if self.spgwc:
+            self.spgwc.__del__()
 
-        self.spgwu.__del__()
-        self.spgwc.__del__()
-        self.mme.__del__()
-        self.hss.__del__()
-        self.cassandra.__del__()
+        if self.mme:
+            self.mme.__del__()
+
+        if self.hss:
+            self.hss.__del__()
+
+        if self.cassandra:
+            self.cassandra.__del__()
 
     def __del__(self):
-
-        self.docker_private_network.__del__()
-        self.docker_public_network.__del__()
+        self.stop()
 
 if __name__ == "__main__":
 

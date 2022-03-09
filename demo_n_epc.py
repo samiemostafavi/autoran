@@ -7,16 +7,28 @@ from dataclasses import dataclass, field
 
 from autoran.oailte.epc import EvolvedPacketCore
 from autoran.oailte.enodeb import ENodeB
+from autoran.utils import DockerNetwork
 
 if __name__ == "__main__":
 
-    # connect to the EPC host dockerhub
-    epc_host_name = 'finarfin'
-
+    # create EPC networks
+    # EPC private network
+    epc_private_network = DockerNetwork(
+            host='finarfin',
+            network=IPv4Network('192.168.68.0/26'),
+            name='prod-oai-private-net'
+    )
+    # EPC public network
+    epc_public_network = DockerNetwork(
+            host='finarfin',
+            network=IPv4Network('192.168.61.192/26'),
+            name='prod-oai-public-net'
+    )
+    # create EPC
     epc = EvolvedPacketCore(
-            host=epc_host_name,
-            private_network='192.168.68.0/26',
-            public_network='192.168.61.192/26',
+            host='finarfin',
+            private_network=epc_private_network,
+            public_network=epc_public_network,
     )
 
     # create hss config
@@ -131,10 +143,14 @@ if __name__ == "__main__":
         'epc_ex_net_if' : 'enp5s0',
     }
 
-    epc.start(hss_config,mme_config,spgwc_config,spgwu_config, routing_config)
 
-    # start an internal enb
-    enb_public_ip = epc.allocate_public_ip()
+    # allocate an ip from EPC for an internal ENodeB
+    enb = ENodeB(
+        host='finarfin',
+        network=epc_public_network,
+        name='prod-oai-enb',
+    )
+
     enb_config = {
         "mme_ip":epc.mme_public_ip,
         "spgwc_ip":epc.spgwc_public_ip,
@@ -154,28 +170,34 @@ if __name__ == "__main__":
         'ENABLE_MEASUREMENT_REPORTS':'yes',
         'MME_S1C_IP_ADDRESS':epc.mme_public_ip,
         'ENABLE_X2':'yes',
-        'ENB_X2_IP_ADDRESS':enb_public_ip,
+        'ENB_X2_IP_ADDRESS':enb.ip,
         'ENB_S1C_IF_NAME':'eth0',
-        'ENB_S1C_IP_ADDRESS':enb_public_ip,
+        'ENB_S1C_IP_ADDRESS':enb.ip,
         'ENB_S1U_IF_NAME':'eth0',
-        'ENB_S1U_IP_ADDRESS':enb_public_ip,
+        'ENB_S1U_IP_ADDRESS':enb.ip,
         'THREAD_PARALLEL_CONFIG':'PARALLEL_SINGLE_THREAD',
         'FLEXRAN_ENABLED':'no',
         'FLEXRAN_INTERFACE_NAME':'eth0',
         'FLEXRAN_IPV4_ADDRESS':'CI_FLEXRAN_CTL_IP_ADDR',
     }
-    enb = ENodeB(
-        name='prod-oai-enb',
-        client=epc.client,
-        network=epc.docker_public_network,
-        ip=enb_public_ip,
+    
+
+    epc.start(
+        hss_config=hss_config,
+        mme_config=mme_config,
+        spgwc_config=spgwc_config,
+        spgwu_config=spgwu_config,
+        routing_config=routing_config,
+    )
+
+    enb.start( 
         config=enb_config,
     )
 
     input("Press any key to stop...\n")
 
     enb.__del__()
-    epc.stop()
     epc.__del__()
-
+    epc_public_network.__del__()
+    epc_private_network.__del__()
 
