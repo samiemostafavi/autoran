@@ -12,7 +12,6 @@ In this section, I provide the missing docker-compose files, configurations, and
 
 - [How to start an End-to-End SDR-based LTE network using OAI](docs/LTE.md)
 - [How to start an End-to-End SDR-based standalone 5G network using OAI](docs/5G_SA_MINI_NRF.md)
-- [How to start an End-to-End SDR-based non-standalone 5G network using OAI](docs/5G_NSA.md)
 
 # OAI repositories
 
