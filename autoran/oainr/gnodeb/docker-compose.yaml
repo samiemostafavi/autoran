@@ -25,9 +25,9 @@ services:
       demo-oai-public-net:
         ipv4_address: 192.168.70.155
     entrypoint: /usr/bin/env
-    command: sh -c "{ ./bin/uhd_images_downloader.py && exec /opt/oai-gnb/bin/nr-softmodem.Rel15 -O /opt/oai-gnb/gnb.conf -E --nokrnmod --sa; } 2>&1 | tee /opt/oai-gnb/logs.txt"
+    command: sh -c "{ ./bin/uhd_images_downloader.py && exec /opt/oai-gnb/bin/nr-softmodem.Rel15 -O /opt/oai-gnb/gnb.conf -E --sa; } 2>&1 | tee /opt/oai-gnb/logs.txt"
     volumes: # Mounted from host
-      - ./gnb.conf:/opt/oai-gnb/gnb.conf:ro
+      - ./gnb.sa.band78.fr1.106PRB.usrpb210.conf:/opt/oai-gnb/gnb.conf:ro
       - ./logs.txt:/opt/oai-gnb/logs.txt
 networks:
   demo-oai-public-net:
