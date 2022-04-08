@@ -1,0 +1,28 @@
+---
+#ansible-playbook -i 192.168.2.3, e320_if_up.yml --extra-vars "ip=192.168.20.3/24 mtu_bytes=1500"
+
+- hosts: all
+  remote_user: root
+  gather_facts: no
+  tasks:
+    - name: Write CHDR interface config
+      ansible.builtin.copy:
+        dest: "/etc/systemd/network/sfp0.network"
+        mode: 0644
+        content: |
+          [Match]
+          Name=sfp0
+
+          [Network]
+          Address={{ ip }}
+
+          [Link]
+          MTUBytes={{ mtu_bytes }}
+
+    - name: Restart network config
+      command: systemctl daemon-reload
+
+    - name: Restart systemd-networkd
+      command: systemctl restart systemd-networkd
+
+...
