@@ -162,3 +162,8 @@ You can configure the EPC by modifiying the docker-compose file located at
     NOTE: According to Raphael in an answer to mailing list with the subject `UE-softmodem fails to add ip address`, `nasmesh` is not much more worked on at Eurecom. So use `--nokrnmod 1` all the time for OAI UE.
     
 
+# Common Problems
+
+## Radios Gain and Attenuation
+
+Typically, if the radios are connected through wire, there must be attenuators in the middle. For the USRB B210, 60db attenuation was sufficient.
