@@ -16,3 +16,12 @@
 
       BR
       Marcin
+
+In order to disable hyperthreading, do the following:
+
+Newer Kernels provide a Simultaneous Multithreading (SMT) control.
+
+      sudo -i
+      cat /sys/devices/system/cpu/smt/active
+      echo off > /sys/devices/system/cpu/smt/control
+      exit
