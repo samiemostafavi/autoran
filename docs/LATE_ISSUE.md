@@ -27,12 +27,15 @@ Newer Kernels provide a Simultaneous Multithreading (SMT) control.
       exit
 
 
-What I have done and did not work:
+What I have done and the following different scenarios all introduce `LLLLLLLL`:
 
-1. Change ethernet link from 1gb to 10gb and vice versa
-2. Change network interface card
+1. Changed ethernet link from 1gb to 10gb and vice versa
+2. Changed network interface card
 3. Set MTU to 1500, 8000, and 9000
-4. Change Openairinterface commit version
+4. Changed Openairinterface commit version
+5. Used different radios
+6. Tried a point-to-point ethernet connection vs using a switch (because it was showing weired behaiviour) 
+
 
 Finally by changing the radio host the problem is gone:
 
