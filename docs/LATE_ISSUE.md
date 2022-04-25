@@ -37,7 +37,7 @@ What I have done and the following different scenarios all introduce `LLLLLLLL`:
 6. Tried a point-to-point ethernet connection vs using a switch (because it was showing weired behaiviour) 
 
 
-Finally by changing the radio host the problem is gone:
+Finally by changing the radio host the problem is gone, the specifications of the system:
 
       $ hostnamectl status
   
@@ -79,3 +79,20 @@ The system has 6 cores with the following configuration:
       address sizes	: 39 bits physical, 48 bits virtual
       power management:
 
+
+7. Change kernel from low-latency to generic
+      
+Use `grub-menu.sh` script to see the installed kernels.
+
+      sudo chmod +x grub-menu.sh
+      ./grub-menu.sh short
+      
+Check the index of the kernel you wish to switch to, e.g. `1>6` and run:
+
+      sudo grub-reboot "1>6"
+
+And reboot
+
+      sudo reboot
+      
+      
