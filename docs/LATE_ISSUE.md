@@ -80,7 +80,7 @@ The system has 6 cores with the following configuration:
       power management:
 
 
-7. Change kernel from low-latency to generic
+7. Change kernel from low-latency to generic using [here](https://askubuntu.com/questions/838704/grub-reboot-to-specific-kernel) and [here](https://askubuntu.com/questions/1019213/display-grub-menu-and-options-without-rebooting)
       
 Use `grub-menu.sh` script to see the installed kernels.
 
