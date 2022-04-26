@@ -1,10 +1,12 @@
-I could successfully run OAI Enb with USRP E320 and UHD 3.15.0. Everything seems normal for 10-20 seconds. But all of a sudden, I get `LLLLLLLLLL`s in the enb logs. There is the same issue with OAI lteUE. Even when I run them together they find each other and establish the connection. But again after a while, one of them gets broken and drops the connection.
+# Sudden Late Tx Streaming Problem
+
+When running OAI Enb with USRP E320 and UHD 3.15.0, everything seems normal for 10-20 seconds. But all of a sudden, I get `LLLLLLLLLL`s in the enb logs. There is the same issue with OAI lteUE. Even when I run them together they find each other and establish the connection. But again after a while, one of them gets broken and drops the connection.
 
 In order to resolve the issue, several things needed to be done:
 
-# USRP and Host run the same UHD version 3.15.0
+## USRP and Host run the same UHD version 3.15.0
 
-# Turn off hyperthreading
+## Turn off hyperthreading
 
 This is not specific for this issue only. For all openairinterface deployments, hyperthreading must be turend off.
 In order to disable hyperthreading, turn off Simultaneous Multithreading (SMT) control:
@@ -14,7 +16,7 @@ In order to disable hyperthreading, turn off Simultaneous Multithreading (SMT) c
       echo off > /sys/devices/system/cpu/smt/control
       exit
 
-# Increase `net.core` memory
+## Increase `net.core` memory
 
 If it is not embedded in USRP lib file, run the following:
 
@@ -31,7 +33,9 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
 
 Finally by switching the kernel to generic from low-latency the issue is gone.
 
-7. Change kernel from low-latency to generic using [here](https://askubuntu.com/questions/838704/grub-reboot-to-specific-kernel) and [here](https://askubuntu.com/questions/1019213/display-grub-menu-and-options-without-rebooting)
+## Change kernel from low-latency to generic 
+
+[here](https://askubuntu.com/questions/838704/grub-reboot-to-specific-kernel) and [here](https://askubuntu.com/questions/1019213/display-grub-menu-and-options-without-rebooting)
       
 Use `grub-menu.sh` script to see the installed kernels.
 
