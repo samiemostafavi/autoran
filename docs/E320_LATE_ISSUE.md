@@ -1,3 +1,18 @@
+# Bad DCI Problem
+
+      bad DCI 1A !!! 
+      [PHY]   [UE  0] Frame 1095, subframe 6: Problem in DCI!
+
+From "bad DCI 1A !!!" question by Giuseppe Santaromita in OAI users forum in Oct 2020.
+The main problem is with attenuation / amplification, try calibrating your Tx and Rx (at both eNB and UE sides).
+
+## Calibrate Tx Rx Gain and Power
+
+You need to make sure there is no signal saturation, and that also SNR is at an acceptable level.
+You can use the command line arguments, and also the eNB config file.
+
+I use the T tracer on both sides to calibrate at eNB side, I have noise at around 20dB, and UE uplink is at around 40dB, and same at UE side (noise around 20dB, downlink around 40dB). If signal goes above 45-50dB, it starts saturating. You play with Rx gain to move noise, and Tx gain to move signal.
+
 # Sudden Late Tx Streaming Problem
 
 When running OAI Enb with USRP E320 and UHD 3.15.0, everything seems normal for 10-20 seconds. But all of a sudden, I get `LLLLLLLLLL`s in the enb logs. There is the same issue with OAI lteUE. Even when I run them together they find each other and establish the connection. But again after a while, one of them gets broken and drops the connection.
