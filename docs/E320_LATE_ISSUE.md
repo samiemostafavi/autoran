@@ -1,5 +1,7 @@
 # Bad DCI Problem
 
+It means that DCI has not been well decoded.
+
       bad DCI 1A !!! 
       [PHY]   [UE  0] Frame 1095, subframe 6: Problem in DCI!
 
