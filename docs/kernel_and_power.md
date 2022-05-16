@@ -1,6 +1,8 @@
 
 ## Install Low-Latency Kernel
 
+Use `uname -r` to check the kernel version.
+
 ### Switch kernels
 
 Check [here](https://askubuntu.com/questions/838704/grub-reboot-to-specific-kernel) and [here](https://askubuntu.com/questions/1019213/display-grub-menu-and-options-without-rebooting)
@@ -33,12 +35,16 @@ In order to disable hyperthreading, turn off Simultaneous Multithreading (SMT) c
       
 ### Permanent Way:
 
+Still no clue.
 
 ## Turn off CPU Power Management
+
+Check [here]<https://askubuntu.com/questions/523640/how-i-can-disable-cpu-frequency-scaling-and-set-the-system-to-performance>
 
 We must set the cpu frequency governor to `performance` first.
 
 ### Temporary Way:
+
 Check if the governor is `ondemand` or `performance`:
 
     cat /sys/devices/system/cpu/cpu[0-9]*/cpufreq/scaling_governor
@@ -48,6 +54,7 @@ Make all of them `performance` by running:
     sudo echo performance | sudo tee /sys/devices/system/cpu/cpu[0-5]*/cpufreq/scaling_governor
 
 ### Permanent Way:
+
 After having installed `cpufrequtils` by `sudo apt-get install cpufrequtils` , look at the info given by the command `cpufreq-info`, then create a file - `sudo vim /etc/default/cpufrequtils` - and write into it as below. (old: `ondemand`)
 
       GOVERNOR="performance"
