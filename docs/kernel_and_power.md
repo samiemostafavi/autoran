@@ -1,9 +1,9 @@
 
-## Install Low-Latency Kernel
+# Install Low-Latency Kernel
 
 Use `uname -r` to check the kernel version.
 
-### Switch kernels
+## Switch kernels
 
 Check [here](https://askubuntu.com/questions/838704/grub-reboot-to-specific-kernel) and [here](https://askubuntu.com/questions/1019213/display-grub-menu-and-options-without-rebooting)
       
@@ -19,6 +19,8 @@ Check the index of the kernel you wish to switch to, e.g. `1>6` and run:
 And reboot
 
       sudo reboot
+
+# Disable CPU Power Management Features
 
 ## Disable Intel's P-State and C-State
 
@@ -46,7 +48,7 @@ In order to disable hyperthreading, turn off Simultaneous Multithreading (SMT) c
 
 Still no clue.
 
-## Turn off CPU Power Management
+## Turn off CPU Down-Scaling
 
 Check [here](https://askubuntu.com/questions/523640/how-i-can-disable-cpu-frequency-scaling-and-set-the-system-to-performance)
 
