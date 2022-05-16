@@ -39,7 +39,7 @@ Still no clue.
 
 ## Turn off CPU Power Management
 
-Check [here]<https://askubuntu.com/questions/523640/how-i-can-disable-cpu-frequency-scaling-and-set-the-system-to-performance>
+Check [here](https://askubuntu.com/questions/523640/how-i-can-disable-cpu-frequency-scaling-and-set-the-system-to-performance)
 
 We must set the cpu frequency governor to `performance` first.
 
