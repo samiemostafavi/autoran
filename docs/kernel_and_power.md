@@ -50,9 +50,28 @@ In order to disable hyperthreading, turn off Simultaneous Multithreading (SMT) c
 
 Still no clue.
 
-## Turn off CPU Down-Scaling
+## Turn off CPU Frequency Scaling
 
 Check [here](https://askubuntu.com/questions/523640/how-i-can-disable-cpu-frequency-scaling-and-set-the-system-to-performance)
+and [here](https://askubuntu.com/questions/149271/how-to-change-default-scaling-governor-back-to-ondemand)
+
+1. Install `cpufreq` tool by `sudo apt-get install cpufrequtils`.
+2. Check frequency scaling settings by `sudo cpufreq-info`:
+
+            cpufrequtils 008: cpufreq-info (C) Dominik Brodowski 2004-2009
+            Report errors and bugs to cpufreq@vger.kernel.org, please.
+            analyzing CPU 0:
+              driver: intel_pstate
+              CPUs which run at the same hardware frequency: 0
+              CPUs which need to have their frequency coordinated by software: 0
+              maximum transition latency: 4294.55 ms.
+              hardware limits: 800 MHz - 4.60 GHz
+              available cpufreq governors: performance, powersave
+              current policy: frequency should be within 800 MHz and 4.60 GHz.
+                              The governor "powersave" may decide which speed to use
+                              within this range.
+              current CPU frequency is 4.16 GHz.
+3. You see that there is two governor options: `performance` or `powersave`. (Here there is no `ondemand` which exists for most CPUs).
 
 We must set the cpu frequency governor to `performance` first.
 
