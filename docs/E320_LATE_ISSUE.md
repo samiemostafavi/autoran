@@ -29,6 +29,8 @@ If it is not embedded in USRP lib file, run the following:
 
             sudo sysctl -w net.core.wmem_max=62500000, sudo sysctl -w net.core.rmem_max=62500000
 
+## Unsuccessful Changes
+
 The following actions did not make any difference and they all had `LLLLLLLL`s:
 
 1. Changed ethernet link from 1gb to 10gb and vice versa
@@ -37,8 +39,38 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
 4. Changed Openairinterface commit version
 5. Used different radios
 6. Tried a point-to-point ethernet connection vs using a switch (because it was showing weired behaiviour) 
+7. Tried `ondemand`, `performance`, etc CPU frequency governors.
+8. Tried changing to low-latency and generic kernels.
 
-Finally, I switched to another PC that it had no low-latency kernel and `performance` CPU governor and eNB was running for an hour without any problem.
+
+## Successful Works
+
+1. Restart always helps!
+2. Keep the governor on `performance`
+3. Stay on low-latency kernel, with p-states and c-states disabled
+
+Increase ethernet network interface buffer?
+If you face bursty drops in the network interface, you could try increasing the buffers (if your NIC allows you to): check the maximum setting with:     
+
+            sudo ethtool -g eno1
+            
+            Ring parameters for eno1:
+            Pre-set maximums:
+            RX:		4096
+            RX Mini:	0
+            RX Jumbo:	0
+            TX:		4096
+            Current hardware settings:
+            RX:		512
+            RX Mini:	0
+            RX Jumbo:	0
+            TX:		512
+            
+            
+and set it with
+
+            sudo ethtool -G eno1 rx 4096
+            
 
 
       
