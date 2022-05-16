@@ -38,7 +38,7 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
 5. Used different radios
 6. Tried a point-to-point ethernet connection vs using a switch (because it was showing weired behaiviour) 
 
-Finally by switching the kernel to generic from low-latency the issue is gone.
+Finally, I switched to another PC that it had no low-latency kernel and `performance` CPU governor and eNB was running for an hour without any problem.
 
 
       
