@@ -47,4 +47,11 @@ Make all of them `performance` by running:
 
     sudo echo performance | sudo tee /sys/devices/system/cpu/cpu[0-5]*/cpufreq/scaling_governor
 
+### Permanent Way:
+After having installed `cpufrequtils` by `sudo apt-get install cpufrequtils` , look at the info given by the command `cpufreq-info`, then create a file - `sudo vim /etc/default/cpufrequtils` - and write into it as below. (old: `ondemand`)
+
+      GOVERNOR="performance"
+
+Lastly the command to make the change take action and be permanent (except when booting up, that is) `sudo /etc/init.d/cpufrequtils restart`
+
 Run `sudo i7z` and check the cpu frequencies and temprature.
