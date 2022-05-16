@@ -72,5 +72,19 @@ and set it with
             sudo ethtool -G eno1 rx 4096
             
 
+Winning setup:
 
+      analyzing CPU 35:
+        driver: acpi-cpufreq
+        CPUs which run at the same hardware frequency: 35
+        CPUs which need to have their frequency coordinated by software: 35
+        maximum transition latency: 10.0 us.
+        hardware limits: 1.20 GHz - 3.00 GHz
+        available frequency steps: 3.00 GHz, 3.00 GHz, 2.90 GHz, 2.70 GHz, 2.60 GHz, 2.50 GHz, 2.40 GHz, 2.20 GHz, 2.10 GHz, 2.00 GHz, 1.80 GHz, 1.70 GHz, 1.60 GHz, 1.50 GHz, 1.30 GHz, 1.20 GHz
+        available cpufreq governors: conservative, ondemand, userspace, powersave, performance, schedutil
+        current policy: frequency should be within 3.00 GHz and 3.00 GHz.
+                        The governor "ondemand" may decide which speed to use
+                        within this range.
+        current CPU frequency is 3.00 GHz (asserted by call to hardware).
+        cpufreq stats: 3.00 GHz:99,39%, 3.00 GHz:0,00%, 2.90 GHz:0,00%, 2.70 GHz:0,00%, 2.60 GHz:0,00%, 2.50 GHz:0,00%, 2.40 GHz:0,00%, 2.20 GHz:0,00%, 2.10 GHz:0,00%, 2.00 GHz:0,00%, 1.80 GHz:0,00%, 1.70 GHz:0,00%, 1.60 GHz:0,00%, 1.50 GHz:0,00%, 1.30 GHz:0,00%, 1.20 GHz:0,61%  (69)
       
