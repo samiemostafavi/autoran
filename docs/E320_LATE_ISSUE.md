@@ -23,16 +23,6 @@ In order to resolve the issue, several things needed to be done:
 
 ## USRP and Host run the same UHD version 3.15.0
 
-## Turn off hyperthreading
-
-This is not specific for this issue only. For all openairinterface deployments, hyperthreading must be turend off.
-In order to disable hyperthreading, turn off Simultaneous Multithreading (SMT) control:
-
-      sudo -i
-      cat /sys/devices/system/cpu/smt/active
-      echo off > /sys/devices/system/cpu/smt/control
-      exit
-
 ## Increase `net.core` memory
 
 If it is not embedded in USRP lib file, run the following:
@@ -50,20 +40,5 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
 
 Finally by switching the kernel to generic from low-latency the issue is gone.
 
-## Change kernel from low-latency to generic 
 
-[here](https://askubuntu.com/questions/838704/grub-reboot-to-specific-kernel) and [here](https://askubuntu.com/questions/1019213/display-grub-menu-and-options-without-rebooting)
-      
-Use `grub-menu.sh` script to see the installed kernels.
-
-      sudo chmod +x grub-menu.sh
-      ./grub-menu.sh short
-      
-Check the index of the kernel you wish to switch to, e.g. `1>6` and run:
-
-      sudo grub-reboot "1>6"
-
-And reboot
-
-      sudo reboot
       
