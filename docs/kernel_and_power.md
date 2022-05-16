@@ -1,4 +1,6 @@
 
+Openairinterface tutorial: [here](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/OpenAirKernelMainSetup)
+
 # Install Low-Latency Kernel
 
 Use `uname -r` to check the kernel version.
