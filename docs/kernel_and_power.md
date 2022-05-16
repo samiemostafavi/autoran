@@ -20,6 +20,15 @@ And reboot
 
       sudo reboot
 
+## Disable Intel's P-State and C-State
+
+Add `intel_pstate=disable` to the Linux boot options, i.e 
+
+            sudo vim /etc/default/grub
+            GRUB_CMDLINE_LINUX_DEFAULT="quiet intel_pstate=disable processor.max_cstate=1 intel_idle.max_cstate=0 idle=poll" 
+            sudo update-grub 
+
+Append "blacklist intel_powerclamp" to the end of /etc/modprobe.d/blacklist.conf, to blacklist the intel_powerclamp" module. If the file does not exist, create one, and add the line into it.
 
 ## Turn off hyperthreading
 
