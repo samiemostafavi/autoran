@@ -72,8 +72,11 @@ and [here](https://askubuntu.com/questions/149271/how-to-change-default-scaling-
                               within this range.
               current CPU frequency is 4.16 GHz.
 3. You see that there is two governor options: `performance` or `powersave`. (Here there is no `ondemand` which exists for most CPUs).
+4. Set all CPUs governors to `performance`:
 
-We must set the cpu frequency governor to `performance` first.
+            for cpu in $(seq 0 $(($(nproc) -1))) ; do sudo cpufreq-set -c $cpu -g performance ; done
+
+There is other ways to change the governor:
 
 ### Temporary Way:
 
