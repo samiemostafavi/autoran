@@ -37,7 +37,8 @@ class LTEUE(DockerService):
 
         self.container = client.create_container(
             #image='rdefosseoai/oai-lte-ue:develop',
-            image='oai-lte-ue:latest',
+            #image='oai-lte-ue:latest',
+            image='samiemostafavi/autoran:oai-lte-ue',
             name=name,
             hostname='ubuntu',
             #volumes=['/opt/oai-lte-ue/ue_usim.conf','/opt/oai-lte-ue/entrypoint.sh'],
@@ -79,7 +80,8 @@ class LTEUE(DockerService):
         
         
         manager_container = client.create_container(
-            image='oai-lte-ue:latest',
+            #image='oai-lte-ue:latest',
+            image='samiemostafavi/autoran:oai-lte-ue',
             name='prod-lte-ue-manager',
             hostname='ubuntu',
             host_config=client.create_host_config(

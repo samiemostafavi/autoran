@@ -36,7 +36,8 @@ class ENodeB(DockerService):
 
         conn_check_container = self.client.create_container(
             #image='rdefosseoai/oai-enb:develop',
-            image='oai-enb:latest',
+            #image='oai-enb:latest',
+            image='samiemostafavi/autoran:oai-enb',
             name='check-enb-connections',
             hostname='ubuntu',
             host_config=self.client.create_host_config(privileged=True),
@@ -82,7 +83,8 @@ class ENodeB(DockerService):
         })
 
         self.container = self.client.create_container(
-            image='oai-enb:latest',
+            #image='oai-enb:latest',
+            image='samiemostafavi/autoran:oai-enb',
             name=self.name,
             hostname='ubuntu',
             host_config=self.client.create_host_config(

@@ -12,10 +12,12 @@ from autoran.utils import *
 if __name__ == "__main__":
 
     # connect to the EPC host dockerhub
-    epc_host_name = 'finarfin'
+    #epc_host_name = 'finarfin'
+    epc_host_name = '192.168.2.2'
     docker_port = '2375'
+    full_docker_addr = epc_host_name+':'+docker_port
     logger.info('Starting LTE evolved packet core (EPC) on {0} port {1}.'.format(epc_host_name,docker_port))
-    client = docker.APIClient(base_url=epc_host_name+':'+docker_port)
+    client = docker.APIClient(base_url=full_docker_addr)
     
     # create networks
     private_network = DockerNetwork(client,IPv4Network('192.168.68.0/26'),'prod-oai-private-net')
