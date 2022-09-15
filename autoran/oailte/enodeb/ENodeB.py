@@ -5,6 +5,13 @@ from loguru import logger
 from autoran.utils import DockerNetwork, DockerService
 
 class ENodeB(DockerService):
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, tb):
+        self.__del__()
+
     def __init__(self,
         name: str,
         host: str,

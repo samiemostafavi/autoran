@@ -388,6 +388,13 @@ class LogsCheckerThread (threading.Thread):
 
 
 class EvolvedPacketCore():
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, tb):
+        self.__del__()
+
     def __init__(self,
             host: str,
             private_network: DockerNetwork,

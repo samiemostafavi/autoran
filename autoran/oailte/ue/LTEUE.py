@@ -19,6 +19,12 @@ def is_json(myjson):
 class LTEUE(DockerService):
     assigned_ip: IPv4Interface
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, tb):
+        self.__del__()
+
     def __init__(self,
             name: str,
             host: str, 
