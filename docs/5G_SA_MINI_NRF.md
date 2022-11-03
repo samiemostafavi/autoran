@@ -37,8 +37,8 @@ We choose a mini deployment with NRF as described [here](https://gitlab.eurecom.
 1. Pull enb docker image and clone this repository
 
 		docker pull rdefosseoai/oai-gnb:develop
-		git clone git@github.com:samiemostafavi/oai-all-in-docker.git
-		cd ~/oai-all-in-docker/gnodeb
+		git clone git@github.com:samiemostafavi/autoran.git
+		cd ~/autoran/autoran/oainr/gnodeb
 
 	Check whether the USRP device is connected on the docker host (if uhd drivers are installed)
 	
