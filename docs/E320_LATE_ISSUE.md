@@ -41,15 +41,11 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
 6. Tried a point-to-point ethernet connection vs using a switch (because it was showing weired behaiviour) 
 7. Tried `ondemand`, `performance`, etc CPU frequency governors.
 8. Tried changing to low-latency and generic kernels.
-
-
-## Successful Works
-
-1. Restart always helps!
-2. Keep the governor on `performance`
-3. Stay on low-latency kernel, with p-states and c-states disabled
-
-Increase ethernet network interface buffer?
+9. A restart always helps!
+10. Keep the governor on `performance`
+11. Stay on low-latency kernel, with p-states and c-states disabled
+12. Try generic kernel.
+13. Increase ethernet network interface buffer
 If you face bursty drops in the network interface, you could try increasing the buffers (if your NIC allows you to): check the maximum setting with:     
 
             sudo ethtool -g eno1
@@ -65,28 +61,12 @@ If you face bursty drops in the network interface, you could try increasing the 
             RX Mini:	0
             RX Jumbo:	0
             TX:		512
-            
-            
 and set it with
 
             sudo ethtool -G eno1 rx 4096
             
 
-Winning setup:
+# Most critical workaround
 
-      analyzing CPU 35:
-        driver: acpi-cpufreq
-        CPUs which run at the same hardware frequency: 35
-        CPUs which need to have their frequency coordinated by software: 35
-        maximum transition latency: 10.0 us.
-        hardware limits: 1.20 GHz - 3.00 GHz
-        available frequency steps: 3.00 GHz, 3.00 GHz, 2.90 GHz, 2.70 GHz, 2.60 GHz, 2.50 GHz, 2.40 GHz, 2.20 GHz, 2.10 GHz, 2.00 GHz, 1.80 GHz, 1.70 GHz, 1.60 GHz, 1.50 GHz, 1.30 GHz, 1.20 GHz
-        available cpufreq governors: conservative, ondemand, userspace, powersave, performance, schedutil
-        current policy: frequency should be within 3.00 GHz and 3.00 GHz.
-                        The governor "ondemand" may decide which speed to use
-                        within this range.
-        current CPU frequency is 3.00 GHz (asserted by call to hardware).
-        cpufreq stats: 3.00 GHz:99,39%, 3.00 GHz:0,00%, 2.90 GHz:0,00%, 2.70 GHz:0,00%, 2.60 GHz:0,00%, 2.50 GHz:0,00%, 2.40 GHz:0,00%, 2.20 GHz:0,00%, 2.10 GHz:0,00%, 2.00 GHz:0,00%, 1.80 GHz:0,00%, 1.70 GHz:0,00%, 1.60 GHz:0,00%, 1.50 GHz:0,00%, 1.30 GHz:0,00%, 1.20 GHz:0,61%  (69)
-      
-      uname -r
-      5.4.0-110-generic
+Rebuild the UHD image and openairinterface. Update the UHD version.
+
