@@ -27,7 +27,7 @@ And reboot
 
 # Disable CPU Power Management Features
 
-## Disable Intel's P-State and C-State
+## Disable Intel's P-State and C-State from GRUB
 
 Add `intel_pstate=disable` to the Linux boot options, i.e 
 
@@ -36,6 +36,13 @@ Add `intel_pstate=disable` to the Linux boot options, i.e
             sudo update-grub 
 
 Append `blacklist intel_powerclamp` to the end of `/etc/modprobe.d/blacklist.conf`, to blacklist the `intel_powerclamp` module. If the file does not exist, create one, and add the line into it.
+
+## Disable the C-states of the CPU using shell
+
+``` bash
+sudo apt install linux-tools-common linux-tools-lowlatency
+sudo cpupower idle-set -D 2
+```
 
 ## Turn off hyperthreading
 
