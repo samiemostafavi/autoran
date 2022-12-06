@@ -3,7 +3,10 @@ Openairinterface tutorial: [here](https://gitlab.eurecom.fr/oai/openairinterface
 
 # Install Low-Latency Kernel
 
-Use `uname -r` to check the kernel version.
+Use `uname -r` to check the kernel version. If it is not low latency, install it using
+```
+sudo apt-get install linux-lowlatency
+```
 
 ## Switch kernels
 
