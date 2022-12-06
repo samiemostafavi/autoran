@@ -108,3 +108,9 @@ After having installed `cpufrequtils` by `sudo apt-get install cpufrequtils` , l
 Lastly the command to make the change take action and be permanent (except when booting up, that is) `sudo /etc/init.d/cpufrequtils restart`
 
 Run `sudo i7z` and check the cpu frequencies and temprature.
+
+## Set MTU
+
+```
+sudo ip link set dev eth0 mtu 9000
+```
