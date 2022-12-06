@@ -1,5 +1,6 @@
 
 Openairinterface tutorial: [here](https://gitlab.eurecom.fr/oai/openairinterface5g/-/wikis/OpenAirKernelMainSetup)
+UHD tutorial: [here](https://kb.ettus.com/Getting_Started_with_4G_LTE_using_Eurecom_OpenAirInterface_(OAI)_on_the_USRP_2974)
 
 # Install Low-Latency Kernel
 
