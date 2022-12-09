@@ -230,7 +230,7 @@ Socket [0] - [physical cores=18, logical cores=36, max online cores ever=18]
         Core 18 [17]:     3800.00 (38.00x)       100       0       0       0    63      1.0
 ```
  
-## UHD Tests
+## Testing the Setup
 
 You can test the SDR setup by running UHD driver examples and tests. 
 1. Latency test
