@@ -12,7 +12,7 @@ $ vim radio/USRP/USERSPACE/LIB/usrp_lib.cpp
 ## Add identification block
 
 Look for the following `if` block where b200 device type is set:
-```
+```cpp
 if (device_adds[0].get("type") == "b200") {
   device->type = USRP_B200_DEV;
   usrp_master_clock = 30.72e6;
@@ -21,7 +21,7 @@ if (device_adds[0].get("type") == "b200") {
 }
 ```
 Add the following block right after it:
-```
+```cpp
 // E320 identification block
 // added by Samie Mostafavi
 bool device_e3xx = false;
@@ -43,7 +43,7 @@ As you can see, `device->type` is set to `USRP_B200_DEV` and we set the `usrp_ma
 ## Modify `tx_sample_advance` setting
 
 Change the following `switch` block
-```
+```cpp
 switch ((int)openair0_cfg[0].sample_rate) {
   case 46080000:
     s->usrp->set_master_clock_rate(46.08e6);
@@ -101,7 +101,7 @@ switch ((int)openair0_cfg[0].sample_rate) {
 
 ```
 to
-```
+```cpp
 switch ((int)openair0_cfg[0].sample_rate) {
   case 46080000:
     s->usrp->set_master_clock_rate(46.08e6);
