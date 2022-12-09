@@ -1,4 +1,4 @@
-# Prepare E320 and the Radio Host
+# Prepare a Radio Host for E320 SDR
 
 ## Setting Up the Host
 
