@@ -143,5 +143,5 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
             
 **Finally**, I found two solutions:
 1. I updated the UHD driver to 4.0.0 and it is gone.
-2. I Stopped running the core network on the same machine as gnodeb or enodeb
+2. I stopped running the core network on the same machine as gnodeb or enodeb
 
