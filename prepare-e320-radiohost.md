@@ -230,6 +230,98 @@ Socket [0] - [physical cores=18, logical cores=36, max online cores ever=18]
         Core 18 [17]:     3800.00 (38.00x)       100       0       0       0    63      1.0
 ```
  
+## UHD Tests
+
+You can test the SDR setup by running UHD driver examples and tests. 
+1. Latency test
+    ```
+    $ cd ~/uhd/host/build/examples
+    $ ./latency_test 
+    
+    Summary
+    ================
+    Number of runs:   1000
+    RTT value tested: 1 ms
+    ACKs received:    1000/1000
+    Underruns:        0
+    Late packets:     0
+    Other errors:     0
+    ```
+
+2. Bandwidth test
+
+    Using one RF card
+    ```
+    $ cd ~/uhd/host/build/examples
+    $ sudo ./benchmark_rate  \
+       --args "type=e3xx,master_clock_rate=61.44e6" \
+       --duration 60 \
+       --channels "0" \
+       --rx_rate 61.44e6 \
+       --rx_subdev "A:0" \
+       --tx_rate 61.44e6 \
+       --tx_subdev "A:0"
+
+    [00:00:06.100430357] Setting device timestamp to 0...
+    [00:00:06.109760006] Testing receive rate 61.440000 Msps on 1 channels
+    Setting TX spp to 2000
+    [00:00:06.155843152] Testing transmit rate 61.440000 Msps on 1 channels
+    [00:01:06.158435554] Benchmark complete.
+
+    Benchmark rate summary:
+      Num received samples:     3686401959
+      Num dropped samples:      0
+      Num overruns detected:    0
+      Num transmitted samples:  3686456000
+      Num sequence errors (Tx): 0
+      Num sequence errors (Rx): 0
+      Num underruns detected:   0
+      Num late commands:        0
+      Num timeouts (Tx):        0
+      Num timeouts (Rx):        0
+
+
+    Done!
+    ```
+    Using two RF cards
+    ```
+    $ sudo ./benchmark_rate  \
+       --args "type=e3xx,master_clock_rate=61.44e6" \
+       --duration 60 \
+       --channels "0,1" \
+       --rx_rate 30.72e6 \
+       --rx_subdev "A:0 A:1" \
+       --tx_rate 30.72e6 \
+       --tx_subdev "A:0 A:1"
+
+    [00:00:05.872979495] Setting device timestamp to 0...
+    [INFO] [MULTI_USRP]     1) catch time transition at pps edge
+    [INFO] [MULTI_USRP]     2) set times next pps (synchronously)
+    [WARNING] [0/Radio#0] Attempting to set tick rate to 0. Skipping.
+    [00:00:07.721876891] Testing receive rate 30.720000 Msps on 2 channels
+    [WARNING] [0/Radio#0] Attempting to set tick rate to 0. Skipping.
+    Setting TX spp to 2000
+    [00:00:07.766649813] Testing transmit rate 30.720000 Msps on 2 channels
+    [00:01:07.771522141] Benchmark complete.
+
+    Benchmark rate summary:
+      Num received samples:     3686083416
+      Num dropped samples:      0
+      Num overruns detected:    0
+      Num transmitted samples:  3671168000
+      Num sequence errors (Tx): 0
+      Num sequence errors (Rx): 0
+      Num underruns detected:   0
+      Num late commands:        0
+      Num timeouts (Tx):        0
+      Num timeouts (Rx):        0
+
+
+    Done!
+    ```
+    As you can see, `spp` is set to 2000. This is another sign of properly configured 10G link.
+
+
 # References
 
 https://kb.ettus.com/USRP_Host_Performance_Tuning_Tips_and_Tricks
