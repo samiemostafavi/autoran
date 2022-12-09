@@ -4,7 +4,7 @@
 
 Rule of thumb is to stick with an up-to-date develop branch of openairinterface and UHD driver. Then set the operating system according to their recommendation. The latest tests show that you should avoid `lowlatency` kernels. The operating sysytems that work are:
 - Ubuntu 18.04-generic
-    ```
+    ```bash
     $ uname -a
     Linux finarfin 5.4.0-135-generic #152~18.04.2-Ubuntu SMP Tue Nov 29 08:23:49 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
     ```
@@ -12,20 +12,22 @@ Rule of thumb is to stick with an up-to-date develop branch of openairinterface 
 
 Next, we need to install UHD driver on the host. The UHD host version on the E320 must be equal to the one on the host. After installing the desired UHD version on the host, we have to update the radio's UHD if they are not matched.
 
-```
-$ sudo apt install -y libboost-all-dev libusb-1.0-0-dev doxygen python3-docutils python3-mako python3-numpy python3-requests python3-ruamel.yaml python3-setuptools cmake build-essential
-$ git clone https://github.com/EttusResearch/uhd.git ~/uhd
-$ cd ~/uhd
-$ git checkout v4.3.0.0
-$ cd host
-$ mkdir build
-$ cd build
-$ cmake ../
-$ make -j $(nproc)
-$ make test # This step is optional
-$ sudo make install
-$ sudo ldconfig
-$ sudo uhd_images_downloader
+```bash
+sudo apt install -y libboost-all-dev libusb-1.0-0-dev doxygen python3-docutils python3-mako python3-numpy python3-requests python3-ruamel.yaml python3-setuptools cmake build-essential
+
+
+git clone https://github.com/EttusResearch/uhd.git ~/uhd
+cd ~/uhd
+git checkout v4.3.0.0
+cd host
+mkdir build
+cd build
+cmake ../
+make -j $(nproc)
+make test # This step is optional
+sudo make install
+sudo ldconfig
+sudo uhd_images_downloader
 ```
 
 ## Setting Up the Streaming Connection
@@ -42,7 +44,7 @@ Assume interface `enp101s0f0` is chosen on the host for the streaming.
     [INFO] [MPM.PeriphManager] init() called with device args `fpga=XG,mgmt_addr=10.40.3.3,name=ni-e320-3238B87,product=e320'.
     ```
     load the `XG` image if it is not
-    ```
+    ```bash
     $ uhd_images_downloader -t e320 -t fpga
     $ uhd_image_loader --args "type=e3xx,mgmt_addr=192.168.2.4,fpga=XG"
     ```
@@ -90,7 +92,7 @@ Assume interface `enp101s0f0` is chosen on the host for the streaming.
        valid_lft forever preferred_lft forever
     ```
     If it was not, you can set it temporarily by
-    ```
+    ```bash
     sudo ip link set dev enp101s0f0 mtu 9000
     ```
     This won't last after reboot
@@ -127,7 +129,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     $ sudo ethtool -G enp101s0f0 tx 4096 rx 4096
     ```
     check the result
-    ```
+    ```bash
     $ sudo ethtool -g enp101s0f0
     Ring parameters for enp101s0f0:
     Pre-set maximums:
@@ -144,7 +146,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     
 2. Check that the OS network buffers are adjusted
     This is done through our modified version of openairinterface automatically.
-    ```
+    ```bash
     $ sudo sysctl net.core.wmem_max net.core.rmem_max net.core.wmem_default net.core.rmem_default
     net.core.wmem_max = 1048576
     net.core.rmem_max = 50000000
@@ -163,19 +165,19 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
 
  3. Disable Hyper-threading
     Check if it is on:
-    ```
+    ```bash
     $ sudo cat /sys/devices/system/cpu/smt/active
     1
     ```
     If it returns 1, it means it is on. To disable it:
-    ```
+    ```bash
     sudo -i
     echo off > /sys/devices/system/cpu/smt/control
     exit
     ```
  
  4. Disable the C-states of the CPU
-    ```
+    ```bash
     sudo apt install linux-tools-common linux-tools-generic
     sudo cpupower idle-set -D 2
     ```
@@ -183,15 +185,15 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
  5. Set CPU Governor to `performance`
 
     Install `cpufrequtils` with the command below:
-    ```
+    ```bash
     sudo apt install cpufrequtils
     ```
     To set the CPU governor to `performance` for all cores:
-    ```
+    ```bash
     for ((i=0;i<$(nproc --all);i++)); do sudo cpufreq-set -c $i -r -g performance; done
     ```
     To verify:
-    ```
+    ```bash
     $ cpufreq-info
     cpufrequtils 008: cpufreq-info (C) Dominik Brodowski 2004-2009
     Report errors and bugs to cpufreq@vger.kernel.org, please.
@@ -212,7 +214,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     ```
  
 You can also verify these conditions using the i7z utility, as shown below. 
-```
+```bash
 sudo apt-get install i7z
 sudo i7z
 
@@ -252,7 +254,7 @@ Socket [0] - [physical cores=18, logical cores=36, max online cores ever=18]
 
 You can test the SDR setup by running UHD driver examples and tests. 
 1. Latency test
-    ```
+    ```bash
     $ cd ~/uhd/host/build/examples
     $ ./latency_test 
     
@@ -269,7 +271,7 @@ You can test the SDR setup by running UHD driver examples and tests.
 2. Bandwidth test
 
     Using one RF card
-    ```
+    ```bash
     $ cd ~/uhd/host/build/examples
     $ sudo ./benchmark_rate  \
        --args "type=e3xx,master_clock_rate=61.44e6" \
@@ -302,7 +304,7 @@ You can test the SDR setup by running UHD driver examples and tests.
     Done!
     ```
     Using two RF cards
-    ```
+    ```bash
     $ sudo ./benchmark_rate  \
        --args "type=e3xx,master_clock_rate=61.44e6" \
        --duration 60 \
