@@ -6,7 +6,9 @@ If the device is fresh out of the box, management interface must be setup for ss
 
 To check if the device is recognized by the UHD driver on the host, run one of the following commands
 
-    uhd_find_devices
+```
+uhd_find_devices
+```
     
 If the device is not showing up, check the network interfaces and bring them up, or just simply turn on the radios LoL.
 
@@ -14,11 +16,15 @@ If the device is not showing up, check the network interfaces and bring them up,
 
 When the USB cable is connected, check the serial devices connected to the host
 
-    ls /dev/serial/by-id
+```
+ls /dev/serial/by-id
+```
     
 Every E320 series device connected to USB will by default show up as four different devices. The devices labeled `USB_to_UART_Bridge_Controller` are the devices that offer a serial prompt. The first (with the `if00` suffix) connects to the STM32 Microcontroller, whereas the second connects to the ARM CPU.
     
-    sudo screen  /dev/serial/by-id/usb-Silicon_Labs_CP2105_Dual_USB_to_UART_Bridge_Controller_011C1095-if01-port0 115200
+```
+sudo screen  /dev/serial/by-id/usb-Silicon_Labs_CP2105_Dual_USB_to_UART_Bridge_Controller_011C1095-if01-port0 115200
+```
 
 Enter `root` for the login and empty password.
 
