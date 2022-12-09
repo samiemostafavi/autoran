@@ -1,6 +1,8 @@
-# Modify Openairinterface to Work with USRP E320
+# Run Openairinterface with USRP E320
 
 Since E320 and B210 have the same RF front-end AD9361, the approach is to make oai believe that the radio is B210. Then it will use the calibration tables of AD9361 for E320 as well. However, E320 is a networked device and from this perspective it is similar to X300 or N3XX USRPs. We make sure to set proper parameters if they are related to the host-sdr link characteristics.
+
+## Code modifications
 
 The only file that we modify is `radio/USRP/USERSPACE/LIB/usrp_lib.cpp` in the root folder of `openairinterface5g` repository.
 
@@ -9,7 +11,7 @@ $ cd ~/openairinterface5g
 $ vim radio/USRP/USERSPACE/LIB/usrp_lib.cpp
 ```
 
-## Add identification block
+### Add identification block
 
 Look for the following `if` block where b200 device type is set:
 ```cpp
@@ -40,7 +42,7 @@ if (device_adds[0].get("type") == "e3xx") {
 
 As you can see, `device->type` is set to `USRP_B200_DEV` and we set the `usrp_master_clock` to 46.08 Mhz from the begining to avoid RX/TX rate known issue.
 
-## Modify `tx_sample_advance` setting
+### Modify `tx_sample_advance` setting
 
 Change the following `switch` block inside `if (device->type == USRP_B200_DEV)`
 ```cpp
@@ -183,3 +185,47 @@ switch ((int)openair0_cfg[0].sample_rate) {
 ```
 
 E320 `tx_sample_advance` parameter is taken from `USRP_N300_DEV`,`USRP_X300_DEV`, and `USRP_X400_DEV` switch case.
+
+## Config file modifications
+
+As said above, we take all the configurations of B210 and use it for E320. Hence, we use B210 config file as well. For example the one for 5g standalone band 78 and 106 prbs `targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf`. Just remember to add the `sdr_addrs` parameter to `RUs` section:
+```
+cd ~/openairinterface5g
+vim targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf`
+```
+After adding `sdr_addrs` it should be like this:
+```
+RUs = (
+{
+  local_rf       = "yes"
+  nb_tx          = 1
+  nb_rx          = 1
+  att_tx         = 0;
+  att_rx         = 0;
+  bands          = [78];
+  max_pdschReferenceSignalPower = -27; #it was -27
+  max_rxgain                    = 114;
+  eNB_instances  = [0];
+  #beamforming 1x4 matrix:
+  bf_weights = [0x00007fff, 0x0000, 0x0000, 0x0000];
+  clock_src = "internal";
+  sdr_addrs="mgmt_addr=10.10.3.3,addr=10.40.3.3";
+}
+);
+```
+If the mgmt address of the SDR is `10.10.3.3` and streaming address is `10.40.3.3`.
+
+## Run commands arguments
+
+So far, tests show that the following commands work best
+
+### Standalone 5G band 78 106 PRBs
+
+gnodeb:
+```bash
+sudo uhd_image_loader --args "type=e3xx,mgmt_addr=10.10.3.3,fpga=XG" && sudo ./nr-softmodem -O ../../../targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf --sa --continuous-tx --usrp-tx-thread-config 1 -E --gNBs.[0].min_rxtxtime 6
+```
+nrue:
+``` bash
+sudo uhd_image_loader --args "type=e3xx,mgmt_addr=10.10.3.4,fpga=XG" && sudo ./nr-uesoftmodem -r 106 --numerology 1 --band 78 -C 3619200000 --nokrnmod --sa -E --uicc0.imsi 001010000000001 --uicc0.nssai_sd 1 --usrp-args "mgmt_addr=10.10.3.4,addr=10.40.3.4" --ue-fo-compensation --ue-rxgain 120 --ue-txgain 0 --ue-max-power 0
+```
