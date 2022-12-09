@@ -1,6 +1,6 @@
 # Prepare E320 and the Radio Host
 
-## Setting Up the Host Operating System
+## Setting Up the Host
 
 Rule of thumb is to stick with an up-to-date develop branch of openairinterface and UHD driver. Then set the operating system according to their recommendation. The latest tests show that you should avoid `lowlatency` kernels. The operating sysytems that work are:
 - Ubuntu 18.04-generic
@@ -9,6 +9,24 @@ Rule of thumb is to stick with an up-to-date develop branch of openairinterface 
     Linux finarfin 5.4.0-135-generic #152~18.04.2-Ubuntu SMP Tue Nov 29 08:23:49 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
     ```
 - Ubuntu 20.04-generic
+
+Next, we need to install UHD driver on the host. The UHD host version on the E320 must be equal to the one on the host. After installing the desired UHD version on the host, we have to update the radio's UHD if they are not matched.
+
+```
+$ sudo apt install -y libboost-all-dev libusb-1.0-0-dev doxygen python3-docutils python3-mako python3-numpy python3-requests python3-ruamel.yaml python3-setuptools cmake build-essential
+$ git clone https://github.com/EttusResearch/uhd.git ~/uhd
+$ cd ~/uhd
+$ git checkout v4.3.0.0
+$ cd host
+$ mkdir build
+$ cd build
+$ cmake ../
+$ make -j $(nproc)
+$ make test # This step is optional
+$ sudo make install
+$ sudo ldconfig
+$ sudo uhd_images_downloader
+```
 
 ## Setting Up the Streaming Connection
 
