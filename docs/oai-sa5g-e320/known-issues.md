@@ -1,3 +1,6 @@
+# Known Issues
+
+
 ##  Could not set RX rate to 46.080 MHz
 
 This problem took us 2 weeks to discover while it was in front of our eyes all the time. When oai initializes the radio, first it asks for a master clock rate and then a bandwidth. You can see on the erroneous logs that oai asks for 30.720 MHz `master_clock_rate` but then tries to set RX and TX rate to 46.080 MHz. This causes a warning: `Could not set RX rate to 46.080 MHz. Actual rate is 30.720 MHz`. Eventually the rate is 30.720 MHz and not 46.080 MHz which is what oai wants.
