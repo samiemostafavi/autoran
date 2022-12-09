@@ -1,4 +1,4 @@
-# Prepare a Radio Host for E320 SDR
+# Prepare a Radio Host for E320 SDR and Openairinterface
 
 ## Setting Up the Host
 
