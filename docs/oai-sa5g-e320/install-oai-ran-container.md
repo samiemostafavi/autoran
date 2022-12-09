@@ -1,1 +1,1 @@
-# Install OAI RAN Container
+# Install Openairinterface Radio Access Network (RAN) in Containers
