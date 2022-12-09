@@ -136,28 +136,7 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
 10. Keep the governor on `performance`
 11. Stay on low-latency kernel, with p-states and c-states disabled
 12. Try generic kernel.
-13. Increase ethernet network interface buffer
-If you face bursty drops in the network interface, you could try increasing the buffers (if your NIC allows you to): check the maximum setting with:     
-
-            sudo ethtool -g eno1
+13. Increase ethernet network interface ring buffers size
             
-            Ring parameters for eno1:
-            Pre-set maximums:
-            RX:		4096
-            RX Mini:	0
-            RX Jumbo:	0
-            TX:		4096
-            Current hardware settings:
-            RX:		512
-            RX Mini:	0
-            RX Jumbo:	0
-            TX:		512
-and set it with
-
-            sudo ethtool -G eno1 rx 4096
-            
-
-# Most critical workaround
-
-Rebuild the UHD image and openairinterface. Update the UHD version to 4.0
+**Finally**, I updated the UHD driver to 4.0.0 and it is gone.
 
