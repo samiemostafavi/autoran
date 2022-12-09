@@ -1,0 +1,1 @@
+# Install Openairinterface on Baremetal
