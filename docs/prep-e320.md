@@ -142,5 +142,6 @@ Probe the Device from host
 
 ### References
 
+https://kb.ettus.com/E320_Getting_Started_Guide
 https://kb.ettus.com/Writing_the_USRP_File_System_Disk_Image_to_a_SD_Card
 
