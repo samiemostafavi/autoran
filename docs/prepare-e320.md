@@ -1,24 +1,18 @@
-# Setup Schematic
+# Installing and Preparing an E320 SDR
 
+## Configure network connection
 
-# Step 1. Initial Device Setup
+If the device is fresh out of the box, management interface must be setup for ssh. It either needs DHCP, or manual static ip. Below setting up a static ip is explained.
 
-## Connect to the device
+To check if the device is recognized by the UHD driver on the host, run one of the following commands
 
-First, if the device is fresh out of the box, management interface must be setup for ssh. It either needs DHCP, or manual static ip. Below setting up a static ip is explained.
-
-### Setting Up Management Interface
-
-To check if the device is recognized by UHD, run one of the following commands
-
-    UHD_IMAGES_DIR=/usr/share/uhd/images/ uhd_find_devices
-    UHD_IMAGES_DIR=/usr/share/uhd/images/ /usr/local/bin/uhd_find_devices
+    uhd_find_devices
     
 If the device is not showing up, check the network interfaces and bring them up, or just simply turn on the radios LoL.
 
+### Connect to the device with USB
 
-
-Connect to the device over USB
+When the USB cable is connected, check the serial devices connected to the host
 
     ls /dev/serial/by-id
     
@@ -28,7 +22,11 @@ Every E320 series device connected to USB will by default show up as four differ
 
 Enter `root` for the login and empty password.
 
-Check the output of `nmcli` device to see who is managing the device
+NOTE: You can exit `screen` by `Ctrl+A` followed by `k` and `y`. Do not keep screen sessions open on the device. It makes it very slow. Use `sudo screen -r` to see detached sessions. If there is any, get in an kill it.
+
+### Configure the network interfaces
+
+Once you are inside the USRP, check the output of `nmcli` device to see who is managing which interface
 
     networkctl list
     IDX LINK TYPE     OPERATIONAL SETUP      
@@ -58,7 +56,7 @@ To setup the radio network interfaces, edit these files on UHD 3.15.0.0:
     vim /etc/systemd/network/eth0.network
     vim /etc/systemd/network/sfp0.network
 
-With UHD 4.0.0:
+With UHD 4.0.0 and newer:
 
     vim /lib/systemd/network/40-eth0.network
     vim /lib/systemd/network/40-sfp0.network
@@ -82,16 +80,15 @@ In the end, make sure the devices respond to ping and use ssh
 
 For some reason, uhd commands do not work over screen and USB. Run them and confirm the UHD version matches the UHD version of the radio host.
 
-## Start CHDR interface
-
-Ettus calls the workload interface of the radios *CHDR*. This is the SFP interface for transferring the data samples and not management purposes. This interface could be setup over ssh as mentioned above, or using Ansible from the radio host.
+The Streming interface is the SFP interface for transferring the data samples and not management purposes. This interface could be setup over ssh as mentioned above, or using Ansible from the radio host.
 
         ansible-playbook -i 192.168.2.3, e320_if_up.yml --extra-vars "ip=192.168.20.3/24 mtu_bytes=1500"
         ansible-playbook -i 192.168.2.4, e320_if_up.yml --extra-vars "ip=192.168.20.4/24 mtu_bytes=1500"
         
-## Update Firmware
+Then, you should be able to ping E320 from the host.
 
-[Source](https://kb.ettus.com/Writing_the_USRP_File_System_Disk_Image_to_a_SD_Card)
+## Update E320's firmware and FPGA
+
 In order to change the UHD version on the radio, you must first load up the desired UHD on your host, and then use `uhd_images_downloader` to pull down the relevant sd-card image.
 
         uhd_images_downloader -t sdimg -t e320
@@ -126,66 +123,21 @@ To ensure the disk is synchronized, run the sync command:
 
         sync
 
-## Update FPGA
-
 This must be done from the corresponding radio host.
 
-        sudo UHD_IMAGES_DIR=/usr/share/uhd/images/ /usr/local/bin/uhd_images_downloader -t e320 -t fpga
-        sudo UHD_IMAGES_DIR=/usr/share/uhd/images/ /usr/local/bin/uhd_image_loader --args "type=e3xx,mgmt_addr=192.168.2.4,fpga=1G"
+        sudo uhd_images_downloader -t e320 -t fpga
+        sudo uhd_image_loader --args "type=e3xx,mgmt_addr=192.168.2.4,fpga=XG"
 
-## Probe the Device
+Probe the Device from host
 
-Note that for probing the device, only do it from its corresponding host and using the streaming interface.
-
-        sudo UHD_IMAGES_DIR=/usr/share/uhd/images/ /usr/local/bin/uhd_usrp_probe --args "addr=192.168.20.3"
-
-
-Useful commands:
-
+        uhd_usrp_probe --args "mgmt_addr=192.168.10.3,addr=192.168.20.3"
+        uhd_usrp_probe --args "type=e3xx"
         uhd_config_info --print-all
 
-## Test the Device
+### References
 
-1Gb/s interface:
+https://kb.ettus.com/Writing_the_USRP_File_System_Disk_Image_to_a_SD_Card
 
-        sudo /usr/local/lib/uhd/examples/benchmark_rate  \
-           --args "addr=192.168.20.4" \
-           --duration 60 \
-           --channels "0,1" \
-           --rx_rate 2e6 \
-           --rx_subdev "A:0 A:1" \
-           --tx_rate 2e6 \
-           --tx_subdev "A:0 A:1"
-          
-         
-         sudo /usr/local/lib/uhd/examples/benchmark_rate  \
-           --args "addr=192.168.20.4,master_clock_rate=25e6" \
-           --duration 60 \
-           --channels "0,1" \
-           --rx_rate 12.5e6 \
-           --rx_subdev "A:0 A:1" \
-           --tx_rate 12.5e6 \
-           --tx_subdev "A:0 A:1"
-
-10Gb/s interface:
-
-        sudo /usr/local/lib/uhd/examples/benchmark_rate  \
-           --args "addr=192.168.20.4,master_clock_rate=61.44e6" \
-           --duration 60 \
-           --channels "0" \
-           --rx_rate 61.44e6 \
-           --rx_subdev "A:0" \
-           --tx_rate 61.44e6 \
-           --tx_subdev "A:0"
-           
-        sudo /usr/local/lib/uhd/examples/benchmark_rate  \
-           --args "addr=192.168.10.2,master_clock_rate=61.44e6" \
-           --duration 60 \
-           --channels "0,1" \
-           --rx_rate 30.72e6 \
-           --rx_subdev "A:0 A:1" \
-           --tx_rate 30.72e6 \
-           --tx_subdev "A:0 A:1"
 
 # Step 2. Modify Openairinterface to work with E320
 
