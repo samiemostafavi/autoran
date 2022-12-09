@@ -42,7 +42,7 @@ As you can see, `device->type` is set to `USRP_B200_DEV` and we set the `usrp_ma
 
 ## Modify `tx_sample_advance` setting
 
-Change the following `switch` block
+Change the following `switch` block inside `if (device->type == USRP_B200_DEV)`
 ```cpp
 switch ((int)openair0_cfg[0].sample_rate) {
   case 46080000:
