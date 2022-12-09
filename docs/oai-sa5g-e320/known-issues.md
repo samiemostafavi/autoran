@@ -141,5 +141,7 @@ The following actions did not make any difference and they all had `LLLLLLLL`s:
 12. Try generic kernel.
 13. Increase ethernet network interface ring buffers size
             
-**Finally**, I updated the UHD driver to 4.0.0 and it is gone.
+**Finally**, I found two solutions:
+1. I updated the UHD driver to 4.0.0 and it is gone.
+2. I Stopped running the core network on the same machine as gnodeb or enodeb
 
