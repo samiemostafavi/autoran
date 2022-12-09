@@ -1,1 +1,1 @@
-# Install Openairinterface on Baremetal
+# Install Openairinterface Radio Access Network (RAN) on Baremetal
