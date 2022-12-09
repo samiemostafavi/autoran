@@ -4,7 +4,7 @@
 
 Rule of thumb is to stick with an up-to-date develop branch of openairinterface and UHD driver. Then set the operating system according to their recommendation. The latest tests show that you should avoid `lowlatency` kernels. The operating sysytems that work are:
 - Ubuntu 18.04-generic
-    ```bash
+    ```console
     $ uname -a
     Linux finarfin 5.4.0-135-generic #152~18.04.2-Ubuntu SMP Tue Nov 29 08:23:49 UTC 2022 x86_64 x86_64 x86_64 GNU/Linux
     ```
@@ -12,7 +12,7 @@ Rule of thumb is to stick with an up-to-date develop branch of openairinterface 
 
 Next, we need to install UHD driver on the host. The UHD host version on the E320 must be equal to the one on the host. After installing the desired UHD version on the host, we have to update the radio's UHD if they are not matched.
 
-```bash
+``` bash
 sudo apt install -y libboost-all-dev libusb-1.0-0-dev doxygen python3-docutils python3-mako python3-numpy python3-requests python3-ruamel.yaml python3-setuptools cmake build-essential
 
 
@@ -37,20 +37,20 @@ You need to make sure that the link there is a network connection between SDR an
 Assume interface `enp101s0f0` is chosen on the host for the streaming.
 
 1. Make sure the FPGA image on the E320 is `XG`
-    ```bash
+    ```console
     $ uhd_usrp_probe --args="type=e3xx"
     [INFO] [UHD] linux; GNU C++ version 7.5.0; Boost_106501; UHD_4.3.0.HEAD-0-g1f8fd345
     [INFO] [MPMD] Initializing 1 device(s) in parallel with args: mgmt_addr=10.40.3.3,type=e3xx,product=e320,serial=3238B87,name=ni-e320-3238B87,fpga=XG,claimed=False,addr=10.40.3.3
     [INFO] [MPM.PeriphManager] init() called with device args `fpga=XG,mgmt_addr=10.40.3.3,name=ni-e320-3238B87,product=e320'.
     ```
     load the `XG` image if it is not
-    ```bash
+    ```console
     $ uhd_images_downloader -t e320 -t fpga
     $ uhd_image_loader --args "type=e3xx,mgmt_addr=192.168.2.4,fpga=XG"
     ```
 
 2. Check that it supports 10G (`Supported link modes`) and the speed (`Speed`) is 10G when the link is up
-    ```bash
+    ```console
     $ sudo ethtool enp101s0f0
     Settings for enp101s0f0:
         Supported ports: [ FIBRE ]
@@ -78,14 +78,14 @@ Assume interface `enp101s0f0` is chosen on the host for the streaming.
 3. Verify that the link is up and `mtu` is 9000 on both ends
     
     On the host
-    ```bash
+    ```console
     $ ip -f inet addr show enp101s0f0
     4: enp101s0f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP group default qlen 1000
     inet 10.40.3.254/16 brd 10.40.255.255 scope global enp101s0f0
        valid_lft forever preferred_lft forever
     ```
     On the E320
-    ```bash
+    ```console
     root@ni-e320-3238B87:~# ip -f inet addr show sfp0
     115: sfp0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc pfifo_fast qlen 1000
     inet 10.40.3.3/16 brd 10.40.255.255 scope global sfp0
@@ -98,7 +98,7 @@ Assume interface `enp101s0f0` is chosen on the host for the streaming.
     This won't last after reboot
 
 When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 defaults it asks UHD for `num_recv_frames=256, num_send_frames=256, product=e320, recv_frame_size=7680, send_frame_size=7680`. If all the above conditions are checkmarked, UHD should be able to set the packet size to at least 1916. This is possible on UHD 4.0 and newer.
-```bash
+```
 [INFO] [MPMD] Initializing 1 device(s) in parallel with args: mgmt_addr=10.10.3.3,type=e3xx,product=e320,serial=3238B87,name=ni-e320-3238B87,fpga=XG,claimed=False,addr=10.40.3.3,master_clock_rate=46080000.000000,num_send_frames=256,num_recv_frames=256,send_frame_size=7680,recv_frame_size=7680
 [INFO] [MPM.PeriphManager] init() called with device args fpga=XG,master_clock_rate=46080000.000000,mgmt_addr=10.10.3.3,name=ni-e320-3238B87,num_recv_frames=256,num_send_frames=256,product=e320,recv_frame_size=7680,send_frame_size=7680.
 ...
@@ -110,7 +110,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
 
 1. Check that the network interface ring buffer size is set to max
 
-    ```bash
+    ```console
     $ sudo ethtool -g enp101s0f0
     Ring parameters for enp101s0f0:
     Pre-set maximums:
@@ -125,11 +125,11 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     TX:		512
     ```
     and set it with
-    ```bash
+    ```console
     $ sudo ethtool -G enp101s0f0 tx 4096 rx 4096
     ```
     check the result
-    ```bash
+    ```console
     $ sudo ethtool -g enp101s0f0
     Ring parameters for enp101s0f0:
     Pre-set maximums:
@@ -146,7 +146,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     
 2. Check that the OS network buffers are adjusted
     This is done through our modified version of openairinterface automatically.
-    ```bash
+    ```console
     $ sudo sysctl net.core.wmem_max net.core.rmem_max net.core.wmem_default net.core.rmem_default
     net.core.wmem_max = 1048576
     net.core.rmem_max = 50000000
@@ -154,7 +154,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     net.core.rmem_default = 212992
     ```
     To set them
-    ```bash
+    ```console
     sudo sysctl -w net.core.wmem_max=33554432
     sudo sysctl -w net.core.rmem_max=33554432
     sudo sysctl -w net.core.wmem_default=33554432
@@ -165,15 +165,15 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
 
  3. Disable Hyper-threading
     Check if it is on:
-    ```bash
+    ```console
     $ sudo cat /sys/devices/system/cpu/smt/active
     1
     ```
     If it returns 1, it means it is on. To disable it:
-    ```bash
-    sudo -i
-    echo off > /sys/devices/system/cpu/smt/control
-    exit
+    ```console
+    $ sudo -i
+    ~# echo off > /sys/devices/system/cpu/smt/control
+    ~# exit
     ```
  
  4. Disable the C-states of the CPU
@@ -193,7 +193,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     for ((i=0;i<$(nproc --all);i++)); do sudo cpufreq-set -c $i -r -g performance; done
     ```
     To verify:
-    ```bash
+    ```console
     $ cpufreq-info
     cpufrequtils 008: cpufreq-info (C) Dominik Brodowski 2004-2009
     Report errors and bugs to cpufreq@vger.kernel.org, please.
@@ -214,9 +214,9 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     ```
  
 You can also verify these conditions using the i7z utility, as shown below. 
-```bash
-sudo apt-get install i7z
-sudo i7z
+```console
+$ sudo apt-get install i7z
+$ sudo i7z
 
 Cpu speed from cpuinfo 2999.00Mhz
 cpuinfo might be wrong if cpufreq is enabled. To guess correctly try estimating via tsc
@@ -254,7 +254,7 @@ Socket [0] - [physical cores=18, logical cores=36, max online cores ever=18]
 
 You can test the SDR setup by running UHD driver examples and tests. 
 1. Latency test
-    ```bash
+    ```console
     $ cd ~/uhd/host/build/examples
     $ ./latency_test 
     
@@ -271,7 +271,7 @@ You can test the SDR setup by running UHD driver examples and tests.
 2. Bandwidth test
 
     Using one RF card
-    ```bash
+    ```console
     $ cd ~/uhd/host/build/examples
     $ sudo ./benchmark_rate  \
        --args "type=e3xx,master_clock_rate=61.44e6" \
@@ -304,7 +304,7 @@ You can test the SDR setup by running UHD driver examples and tests.
     Done!
     ```
     Using two RF cards
-    ```bash
+    ```console
     $ sudo ./benchmark_rate  \
        --args "type=e3xx,master_clock_rate=61.44e6" \
        --duration 60 \
