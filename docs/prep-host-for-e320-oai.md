@@ -256,7 +256,7 @@ You can test the SDR setup by running UHD driver examples and tests.
 1. Latency test
     ```console
     $ cd ~/uhd/host/build/examples
-    $ ./latency_test 
+    $ ./latency_test --args="type=e3xx,addr=10.40.3.2"
     
     Summary
     ================
