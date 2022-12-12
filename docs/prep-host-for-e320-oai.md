@@ -298,7 +298,7 @@ You can test the SDR setup by running UHD driver examples and tests.
     ```
     Using two RF cards
     ```console
-    $ sudo ./benchmark_rate --args "type=e3xx,master_clock_rate=61.44e6" --duration 60 --channels "0,1" --rx_rate 30.72e6 --rx_subdev "A:0 A:1" --tx_rate 30.72e6 --tx_subdev "A:0 A:1"
+    $ sudo ./benchmark_rate --args "addr=10.40.3.2,master_clock_rate=61.44e6" --duration 60 --channels "0,1" --rx_rate 30.72e6 --rx_subdev "A:0 A:1" --tx_rate 30.72e6 --tx_subdev "A:0 A:1"
 
     [00:00:05.872979495] Setting device timestamp to 0...
     [INFO] [MULTI_USRP]     1) catch time transition at pps edge
