@@ -203,7 +203,7 @@ RUs = (
   att_tx         = 0;
   att_rx         = 0;
   bands          = [78];
-  max_pdschReferenceSignalPower = -27; #it was -27
+  max_pdschReferenceSignalPower = -27;
   max_rxgain                    = 114;
   eNB_instances  = [0];
   #beamforming 1x4 matrix:
