@@ -191,7 +191,7 @@ E320 `tx_sample_advance` parameter is taken from `USRP_N300_DEV`,`USRP_X300_DEV`
 As said above, we take all the configurations of B210 and use it for E320. Hence, we use B210 config file as well. For example the one for 5g standalone band 78 and 106 prbs `targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf`. Just remember to add the `sdr_addrs` parameter to `RUs` section:
 ```
 cd ~/openairinterface5g
-vim targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf`
+vim targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.usrpb210.conf
 ```
 After adding `sdr_addrs` it should be like this:
 ```
