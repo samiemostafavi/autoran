@@ -190,7 +190,7 @@ When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 def
     ```
     To set the CPU governor to `performance` for all cores:
     ```bash
-    for ((i=0;i<$(nproc --all);i++)); do sudo cpufreq-set -c $i -r -g performance; done
+    for cpu in $(seq 0 $(($(nproc) -1))) ; do sudo cpufreq-set -c $cpu -g performance ; done
     ```
     To verify:
     ```console
