@@ -273,14 +273,7 @@ You can test the SDR setup by running UHD driver examples and tests.
     Using one RF card
     ```console
     $ cd ~/uhd/host/build/examples
-    $ sudo ./benchmark_rate  \
-       --args "type=e3xx,master_clock_rate=61.44e6" \
-       --duration 60 \
-       --channels "0" \
-       --rx_rate 61.44e6 \
-       --rx_subdev "A:0" \
-       --tx_rate 61.44e6 \
-       --tx_subdev "A:0"
+    $ sudo ./benchmark_rate --args "addr=10.40.3.2,master_clock_rate=61.44e6" --duration 60 --channels "0" --rx_rate 61.44e6 --rx_subdev "A:0" --tx_rate 61.44e6 --tx_subdev "A:0"
 
     [00:00:06.100430357] Setting device timestamp to 0...
     [00:00:06.109760006] Testing receive rate 61.440000 Msps on 1 channels
