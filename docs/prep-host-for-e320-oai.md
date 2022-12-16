@@ -96,6 +96,16 @@ Assume interface `enp101s0f0` is chosen on the host for the streaming.
     sudo ip link set dev enp101s0f0 mtu 9000
     ```
     This won't last after reboot
+    
+    Test 9000 mtu by pinging 9000 packets:
+    ```console
+    $ ping -M do -s 8972 10.40.3.3
+    ```
+    
+    Test 9000 mtu by uhd benchmark:
+    ```
+    sudo ./benchmark_rate --args "mgmt_addr=10.10.3.3,addr=10.40.3.3,master_clock_rate=61.44e6" --duration 60 --channels "0" --rx_rate 61.44e6 --rx_subdev "A:0" --tx_rate 61.44e6 --tx_subdev "A:0" --rx_spp 1919 --tx_spp 1919  --tx_stream_args "spp=1919" --rx_stream_args "spp=1919"
+    ```
 
 When running openairinterface gnodeb, enodeb, ue, or nrue, according to B210 defaults it asks UHD for `num_recv_frames=256, num_send_frames=256, product=e320, recv_frame_size=7680, send_frame_size=7680`. If all the above conditions are checkmarked, UHD should be able to set the packet size to at least 1916. This is possible on UHD 4.0 and newer.
 ```
