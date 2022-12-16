@@ -99,7 +99,12 @@ Assume interface `enp101s0f0` is chosen on the host for the streaming.
     
     Test 9000 mtu by pinging 9000 packets:
     ```console
-    $ ping -M do -s 5850 10.40.3.3
+    $ $ ping -M do -s 5850 10.40.3.3
+    PING 10.40.3.3 (10.40.3.3) 5850(5878) bytes of data.
+    5858 bytes from 10.40.3.3: icmp_seq=1 ttl=64 time=1.05 ms
+    5858 bytes from 10.40.3.3: icmp_seq=2 ttl=64 time=0.994 ms
+    5858 bytes from 10.40.3.3: icmp_seq=3 ttl=64 time=1.01 ms
+    5858 bytes from 10.40.3.3: icmp_seq=4 ttl=64 time=0.992 ms
     ```
     
     Test 9000 mtu by uhd benchmark:
