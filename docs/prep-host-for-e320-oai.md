@@ -97,6 +97,15 @@ Assume interface `enp101s0f0` is chosen on the host for the streaming.
     ```
     This won't last after reboot
     
+    If the interface does not show up, check `dmesg`. You might get `failed to initialize because an unsupported SFP+ module type was detected.` error. In this case, if the driver is `ixgbe`, create the file `/etc/modprobe.d/ixgbe.conf ` and add the following line to it:
+    ```
+    options ixgbe allow_unsupported_sfp=1
+    ```
+    Then restart `ixgbe` driver:
+    ```
+    sudo rmmod ixgbe; sudo modprobe ixgbe
+    ```
+    
     Test 9000 mtu by pinging 9000 packets:
     ```console
     $ $ ping -M do -s 5850 10.40.3.3
